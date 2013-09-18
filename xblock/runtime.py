@@ -206,7 +206,12 @@ class Runtime(object):
         Construct a new xblock of type cls, mixing in the mixins
         defined for this application
         """
-        return self.mixologist.mix(cls)(runtime=self, field_data=field_data, scope_ids=scope_ids, *args, **kwargs)
+        block = self.mixologist.mix(cls)(runtime=self, field_data=field_data, scope_ids=scope_ids, *args, **kwargs)
+
+        # Handle any field updates during __init__
+        block.save()
+
+        return block
 
     def render(self, block, context, view_name):
         """
