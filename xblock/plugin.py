@@ -110,7 +110,13 @@ class Plugin(object):
                     return default
                 raise
 
-            PLUGIN_CACHE[key] = cls._load_class_entry_point(selected_entry_point)
+            try:
+                PLUGIN_CACHE[key] = cls._load_class_entry_point(selected_entry_point)
+            except Exception as exc:
+                if default is not None:
+                    return default
+                raise PluginMissingError(exc)
+
 
         return PLUGIN_CACHE[key]
 
