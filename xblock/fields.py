@@ -19,8 +19,11 @@ import json
 import yaml
 import unicodedata
 
+from typing import TypeVar, Generic, Union, Type  # pylint: disable=unused-import
+
 from xblock.internal import Nameable
 
+XBlockMixin = None  # type: Type
 
 # __all__ controls what classes end up in the docs, and in what order.
 __all__ = [
@@ -224,6 +227,9 @@ class Scope(ScopeBase):
 
         return ScopeBase.__new__(cls, user, block, name)
 
+    def __init__(self, user, block, name=None):
+        super(Scope, self).__init__(user, block, name)
+
     children = Sentinel('Scope.children')
     parent = Sentinel('Scope.parent')
 
@@ -261,8 +267,9 @@ EXPLICITLY_SET = Sentinel("fields.EXPLICITLY_SET")
 # because they define the structure of XBlock trees.
 NO_GENERATED_DEFAULTS = ('parent', 'children')
 
+T = TypeVar('T')
 
-class Field(Nameable):
+class Field(Nameable, Generic[T]):
     """
     A field class that can be used as a class attribute to define what data the
     class will want to refer to.
@@ -307,7 +314,7 @@ class Field(Nameable):
 
     """
     MUTABLE = True
-    _default = None
+    _default = None  # type: Union[T, Sentinel]
     # Indicates if a field's None value should be sent to the XML representation.
     none_to_xml = False
 
@@ -674,14 +681,14 @@ class Field(Nameable):
         return hash(self.name)
 
 
-class JSONField(Field):
+class JSONField(Field[T], Generic[T]):
     """
     Field type which has a convenient JSON representation.
     """
     pass  # for now; we'll bubble functions down when we finish deprecation in Field
 
 
-class Integer(JSONField):
+class Integer(JSONField[int]):
     """
     A field that contains an integer.
 
@@ -703,7 +710,7 @@ class Integer(JSONField):
     enforce_type = from_json
 
 
-class Float(JSONField):
+class Float(JSONField[float]):
     """
     A field that contains a float.
 
@@ -722,7 +729,7 @@ class Float(JSONField):
     enforce_type = from_json
 
 
-class Boolean(JSONField):
+class Boolean(JSONField[bool]):
     """
     A field class for representing a boolean.
 
@@ -760,14 +767,14 @@ class Boolean(JSONField):
     enforce_type = from_json
 
 
-class Dict(JSONField):
+class Dict(JSONField[dict]):
     """
     A field class for representing a Python dict.
 
     The value, as loaded or enforced, must be either be None or a dict.
 
     """
-    _default = {}
+    _default = {}  # type: dict
 
     def from_json(self, value):
         if value is None or isinstance(value, dict):
@@ -778,14 +785,14 @@ class Dict(JSONField):
     enforce_type = from_json
 
 
-class List(JSONField):
+class List(JSONField[list]):
     """
     A field class for representing a list.
 
     The value, as loaded or enforced, can either be None or a list.
 
     """
-    _default = []
+    _default = []  # type: list
 
     def from_json(self, value):
         if value is None or isinstance(value, list):
@@ -796,14 +803,14 @@ class List(JSONField):
     enforce_type = from_json
 
 
-class Set(JSONField):
+class Set(JSONField[set]):
     """
     A field class for representing a set.
 
     The stored value can either be None or a set.
 
     """
-    _default = set()
+    _default = set()  # type: set
 
     def __init__(self, *args, **kwargs):
         """

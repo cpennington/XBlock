@@ -2,9 +2,9 @@
 import logging
 
 try:
-    import simplejson as json
+    import simplejson as json  # type: ignore  # https://github.com/python/mypy/issues/1297
 except ImportError:
-    import json
+    import json  # type: ignore  # https://github.com/python/mypy/issues/1297
 
 from xblock.fields import Scope
 from xblock.runtime import (

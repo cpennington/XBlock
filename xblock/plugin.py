@@ -8,11 +8,13 @@ import functools
 import itertools
 import logging
 import pkg_resources
+
+from typing import Dict, Tuple, Text, Type  # pylint: disable=unused-import
 from xblock.internal import class_lazy
 
 log = logging.getLogger(__name__)
 
-PLUGIN_CACHE = {}
+PLUGIN_CACHE = {}  # type: Dict[Tuple[Text, Text], Type]
 
 
 class PluginMissingError(Exception):
@@ -52,7 +54,8 @@ class Plugin(object):
         `entry_point`: The name of the entry point to load plugins from.
 
     """
-    entry_point = None  # Should be overwritten by children classes
+    # Should be overwritten by children classes
+    entry_point = None  # type: Text
 
     @class_lazy
     def extra_entry_points(cls):  # pylint: disable=no-self-argument

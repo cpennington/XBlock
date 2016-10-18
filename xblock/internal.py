@@ -60,7 +60,7 @@ class Nameable(object):
     """
     __slots__ = ('__name__')
 
-    __name__ = None
+    __name__ = None  # type: str
 
     @staticmethod
     def needs_name(obj):

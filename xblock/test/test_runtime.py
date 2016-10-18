@@ -679,7 +679,7 @@ class TestRuntimeGetBlock(TestCase):
             self.runtime.get_block(self.usage_id)
 
 
-class TestRuntimeDeprecation(WarningTestMixin, TestCase):
+class TestRuntimeDeprecation(WarningTestMixin, TestCase): # type: ignore  # https://github.com/python/typeshed/pull/618
     """
     Tests to make sure that deprecated Runtime apis stay usable,
     but raise warnings.

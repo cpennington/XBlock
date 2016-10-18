@@ -8,9 +8,9 @@ Much of this still needs to be organized.
 """
 
 try:
-    from django.core.exceptions import ImproperlyConfigured
+    from django.core.exceptions import ImproperlyConfigured  # type: ignore  # https://github.com/python/mypy/issues/1297
 except ImportError:
-    class ImproperlyConfigured(Exception):
+    class ImproperlyConfigured(Exception):  # type: ignore  # https://github.com/python/mypy/issues/1297
         '''
         If Django is installed, and djpyfs is installed, but we're not in a
         Django app, we'll get this exception. We'd like to catch

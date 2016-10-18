@@ -32,7 +32,7 @@ from xblock.validation import Validation
 XML_NAMESPACES = xblock.mixins.XML_NAMESPACES
 
 # __all__ controls what classes end up in the docs.
-__all__ = ['XBlock']
+__all__ = ['XBlock', 'XBlockMixin']
 UNSET = object()
 
 

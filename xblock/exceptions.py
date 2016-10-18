@@ -5,7 +5,7 @@ from webob import Response
 try:
     import simplejson as json   # pylint: disable=F0401
 except ImportError:
-    import json
+    import json  # type: ignore  # https://github.com/python/mypy/issues/1297
 
 
 class XBlockNotFoundError(Exception):

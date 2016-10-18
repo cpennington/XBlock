@@ -15,6 +15,9 @@ from lxml import etree
 from StringIO import StringIO
 
 from collections import namedtuple
+
+from typing import Tuple, Type, Dict
+
 from xblock.fields import Field, BlockScope, Scope, ScopeIds, UserScope
 from xblock.field_data import FieldData
 from xblock.fragment import Fragment
@@ -1189,7 +1192,7 @@ class ObjectAggregator(object):
 
 
 # Cache of Mixologist generated classes
-_CLASS_CACHE = {}
+_CLASS_CACHE = {}  # type: Dict[Tuple[Type, Tuple[Type]], Type]
 _CLASS_CACHE_LOCK = threading.RLock()
 
 

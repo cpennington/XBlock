@@ -27,6 +27,8 @@ particular combination of initial conditions that we want to test)
 import copy
 from mock import Mock, patch
 
+from typing import Tuple  # pylint: disable=unused-import
+
 from xblock.core import XBlock
 from xblock.fields import Integer, List, String, ScopeIds, UNIQUE_ID
 from xblock.field_data import DictFieldData
@@ -436,7 +438,7 @@ class ImmutableTestCases(UniversalTestCases):
 class MutableTestCases(UniversalTestCases, MutationProperties):
     """Set up tests of a mutable field"""
     field_class = List
-    field_default = []
+    field_default = []  # type: list
     new_value = ['a', 'b']
 
     def mutate(self, value):
@@ -553,7 +555,7 @@ for operation_backend in (BlockFirstOperations, FieldFirstOperations):
         ):
 
             test_name = base_test_case.__name__ + "With" + operation_backend.__name__
-            test_classes = (operation_backend, base_test_case)
+            test_classes = (operation_backend, base_test_case)  # type: Tuple
             if noop_prefix is not None:
                 test_name += "And" + noop_prefix.__name__
                 test_classes = (noop_prefix, ) + test_classes

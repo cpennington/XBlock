@@ -931,7 +931,7 @@ class OpenLocalResourceTest(unittest.TestCase):
 
     class UnloadableXBlock(XBlock):
         """Just something to load resources from."""
-        resources_dir = None
+        resources_dir = None  # type: str
 
     def stub_resource_stream(self, module, name):
         """Act like pkg_resources.resource_stream, for testing."""
@@ -991,7 +991,7 @@ class OpenLocalResourceTest(unittest.TestCase):
                 unloadable.open_local_resource(uri)
 
 
-class TestXBlockDeprecation(WarningTestMixin, unittest.TestCase):
+class TestXBlockDeprecation(WarningTestMixin, unittest.TestCase):  # type: ignore  # https://github.com/python/typeshed/pull/618
     """
     Tests various pieces of XBlock that have been (or will be) deprecated.
     """

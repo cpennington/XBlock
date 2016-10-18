@@ -327,7 +327,7 @@ class ScopedStorageMixin(RuntimeServicesMixin):
         )
 
 
-class ChildrenModelMetaclass(ScopedStorageMixin.__class__):
+class ChildrenModelMetaclass(NamedAttributesMetaclass):
     """
     A metaclass that transforms the attribute `has_children = True` into a List
     field with a children scope.
