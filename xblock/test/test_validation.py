@@ -78,7 +78,7 @@ class ValidationTest(unittest.TestCase):
         validation = Validation("id")
 
         with assert_raises(TypeError):
-            validation.add_messages("foo")
+            validation.add_messages("foo")  # type: ignore
 
     def test_to_json(self):
         """

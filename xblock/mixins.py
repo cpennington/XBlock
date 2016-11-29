@@ -13,10 +13,13 @@ from collections import OrderedDict
 import json
 import warnings
 
+from typing import Text, Dict, Any, Generic, TypeVar, GenericMeta
+
 from webob import Response
 
 from xblock.exceptions import JsonHandlerError, KeyValueMultiSaveError, XBlockSaveError, FieldDataDeprecationWarning
-from xblock.fields import Field, Reference, Scope, ReferenceList
+from xblock.fields import Field, Reference, Scope, ReferenceList, ScopeIds
+from xblock.field_data import FieldData
 from xblock.internal import class_lazy, NamedAttributesMetaclass
 
 
@@ -105,7 +108,7 @@ class RuntimeServicesMixin(object):
         # The class declares what services it desires. To deal with subclasses,
         # especially mixins, properly, we have to walk up the inheritance
         # hierarchy, and combine all the declared services into one dictionary.
-        combined = {}
+        combined = {}  # type: Dict[Text, str]
         for parent in reversed(cls.mro()):
             combined.update(getattr(parent, "_services_requested", {}))
         return combined
@@ -118,7 +121,7 @@ class RuntimeServicesMixin(object):
                 It is available in XBlock code as ``self.runtime``.
         """
         self.runtime = runtime
-        super(RuntimeServicesMixin, self).__init__(**kwargs)
+        super(RuntimeServicesMixin, self).__init__(**kwargs)  # type: ignore
 
     @classmethod
     def needs(cls, *service_names):
@@ -169,7 +172,7 @@ class ScopedStorageMixin(RuntimeServicesMixin):
         A dictionary mapping the attribute name to the Field object for all
         Field attributes of the class.
         """
-        fields = {}
+        fields = {}  # type: Dict[str, Field]
         # Loop through all of the baseclasses of cls, in
         # the order that methods are resolved (Method Resolution Order / mro)
         # and find all of their defined fields.
@@ -211,13 +214,13 @@ class ScopedStorageMixin(RuntimeServicesMixin):
             # Storing _field_data instead of _deprecated_per_instance_field_data allows subclasses to
             # continue to override this behavior (for instance, the way that edx-platform's XModule does
             # in order to proxy to XBlock).
-            self._field_data = field_data
+            self._field_data = field_data  # type: FieldData
         else:
-            self._deprecated_per_instance_field_data = None  # pylint: disable=invalid-name
+            self._deprecated_per_instance_field_data = None  # type: FieldData  # pylint: disable=invalid-name
 
-        self._field_data_cache = {}
-        self._dirty_fields = {}
-        self.scope_ids = scope_ids
+        self._field_data_cache = {}  # type: Dict[str, Any]
+        self._dirty_fields = {}  # type: Dict[str, Any]
+        self.scope_ids = scope_ids  # type: ScopeIds
 
         super(ScopedStorageMixin, self).__init__(**kwargs)
 
@@ -315,7 +318,7 @@ class ScopedStorageMixin(RuntimeServicesMixin):
                 # Ensure we return a string, even if unanticipated exceptions.
                 attrs.append(" %s=???" % (field.name,))
             else:
-                if isinstance(value, basestring):
+                if isinstance(value, (str, unicode)):
                     value = value.strip()
                     if len(value) > 40:
                         value = value[:37] + "..."
@@ -327,7 +330,7 @@ class ScopedStorageMixin(RuntimeServicesMixin):
         )
 
 
-class ChildrenModelMetaclass(NamedAttributesMetaclass):
+class ChildrenModelMetaclass(NamedAttributesMetaclass, GenericMeta):
     """
     A metaclass that transforms the attribute `has_children = True` into a List
     field with a children scope.
@@ -345,7 +348,10 @@ class ChildrenModelMetaclass(NamedAttributesMetaclass):
         return super(ChildrenModelMetaclass, mcs).__new__(mcs, name, bases, attrs)
 
 
-class HierarchyMixin(ScopedStorageMixin):
+U = TypeVar('U')
+B = TypeVar('B')
+
+class HierarchyMixin(ScopedStorageMixin, Generic[U, B]):
     """
     This adds Fields for parents and children.
     """
@@ -355,9 +361,9 @@ class HierarchyMixin(ScopedStorageMixin):
 
     def __init__(self, **kwargs):
         # A cache of the parent block, retrieved from .parent
-        self._parent_block = None
-        self._parent_block_id = None
-        self._child_cache = {}
+        self._parent_block = None  # type: B
+        self._parent_block_id = None  # type: U
+        self._child_cache = {}  # type: Dict[U, B]
 
         for_parent = kwargs.pop('for_parent', None)
 

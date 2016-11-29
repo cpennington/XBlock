@@ -61,44 +61,6 @@ def blocks_are_equivalent(block1, block2):
     return True
 
 
-def _unabc(cls, msg="{} isn't implemented"):
-    """Helper method to implement `unabc`"""
-    def make_dummy_method(ab_name):
-        """A function to make the dummy method, to close over ab_name."""
-        def dummy_method(self, *args, **kwargs):  # pylint: disable=unused-argument
-            """The method provided for all missing abstract methods."""
-            raise NotImplementedError(msg.format(ab_name))
-        return dummy_method
-
-    for ab_name in cls.__abstractmethods__:
-        setattr(cls, ab_name, make_dummy_method(ab_name))
-
-    cls.__abstractmethods__ = ()
-    return cls
-
-
-def unabc(msg):
-    """
-    Add dummy methods to a class to satisfy abstract base class constraints.
-
-    Usage::
-
-        @unabc
-        class NotAbstract(SomeAbstractClass):
-            pass
-
-        @unabc('Fake {}')
-        class NotAbstract(SomeAbstractClass):
-            pass
-    """
-
-    # Handle the possibility that unabc is called without a custom message
-    if isinstance(msg, type):
-        return _unabc(msg)
-    else:
-        return partial(_unabc, msg=msg)
-
-
 class WarningTestMixin(object):
     """
     Add the ability to assert on warnings raised by a chunk of code.
@@ -116,13 +78,10 @@ class WarningTestMixin(object):
             self.assertTrue(any(issubclass(warning.category, warning_class) for warning in warns))
 
 
-@unabc("{} shouldn't be used in tests")
 class TestRuntime(Runtime):
     """
     An empty runtime to be used in tests
     """
-    # unabc doesn't squash pylint errors
-    # pylint: disable=abstract-method
     def __init__(self, *args, **kwargs):
         memory_id_manager = MemoryIdManager()
         # Provide an IdReader if one isn't already passed to the runtime.
@@ -130,3 +89,15 @@ class TestRuntime(Runtime):
             kwargs.setdefault('id_reader', memory_id_manager)
         kwargs.setdefault('id_generator', memory_id_manager)
         super(TestRuntime, self).__init__(*args, **kwargs)
+
+    def handler_url(self, *args, **kwargs):
+        raise NotImplementedError("handler_url shouldn't be used in tests")
+
+    def local_resource_url(self, *args, **kwargs):
+        raise NotImplementedError("local_resource_url shouldn't be used in tests")
+
+    def publish(self, *args, **kwargs):
+        raise NotImplementedError("publish shouldn't be used in tests")
+
+    def resource_url(self, *args, **kwargs):
+        raise NotImplementedError("resource_url shouldn't be used in tests")

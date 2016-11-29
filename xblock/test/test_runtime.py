@@ -31,7 +31,7 @@ from xblock.field_data import DictFieldData, FieldData
 
 from xblock.test.tools import (
     assert_equals, assert_false, assert_true, assert_raises,
-    assert_raises_regexp, assert_is, assert_is_not, assert_in, unabc,
+    assert_raises_regexp, assert_is, assert_is_not, assert_in,
     WarningTestMixin, TestRuntime
 )
 
@@ -160,7 +160,7 @@ def test_db_model_keys():
 
     def get_key_value(scope, user_id, block_scope_id, field_name):
         """Gets the value, from `key_store`, of a Key with the given values."""
-        new_key = KeyValueStore.Key(scope, user_id, block_scope_id, field_name)
+        new_key = KeyValueStore.Key(scope, user_id, block_scope_id, field_name)  # type: ignore
         return key_store.db_dict[new_key]
 
     # Examine each value in the database and ensure that keys were constructed correctly
@@ -208,11 +208,8 @@ def test_db_model_keys():
     assert_equals('new mixin_agg_usage', get_key_value(Scope.user_state_summary, None, 'u0', 'mixin_agg_usage'))
 
 
-@unabc("{} shouldn't be used in tests")
 class MockRuntimeForQuerying(TestRuntime):
     """Mock out a runtime for querypath_parsing test"""
-    # unabc doesn't squash pylint errors
-    # pylint: disable=abstract-method
     def __init__(self, **kwargs):
         self.mock_query = Mock()
         super(MockRuntimeForQuerying, self).__init__(**kwargs)
@@ -259,15 +256,15 @@ def test_runtime_handle():
     assert_equals(tester.user_state, new_update_string)
 
     # handler can't be found & no fallback handler supplied, should throw an exception
-    tester = TestXBlockNoFallback(runtime, scope_ids=Mock(spec=ScopeIds))
+    tester_no_fallback = TestXBlockNoFallback(runtime, scope_ids=Mock(spec=ScopeIds))
     ultimate_string = "ultimate update"
     with assert_raises(NoSuchHandlerError):
-        runtime.handle(tester, 'test_nonexistant_fallback_handler', ultimate_string)
+        runtime.handle(tester_no_fallback, 'test_nonexistant_fallback_handler', ultimate_string)
 
     # request to use a handler which doesn't have XBlock.handler decoration
     # and no fallback should raise NoSuchHandlerError
     with assert_raises(NoSuchHandlerError):
-        runtime.handle(tester, 'handler_without_correct_decoration', 'handled')
+        runtime.handle(tester_no_fallback, 'handler_without_correct_decoration', 'handled')
 
 
 def test_runtime_render():
@@ -300,9 +297,9 @@ def test_runtime_render():
 
     # test against the no-fallback XBlock
     update_string = u"ultimate update"
-    tester = TestXBlockNoFallback(Mock(), scope_ids=Mock(spec=ScopeIds))
+    tester_no_fallback = TestXBlockNoFallback(Mock(), scope_ids=Mock(spec=ScopeIds))
     with assert_raises(NoSuchViewError):
-        runtime.render(tester, 'test_nonexistent_view', [update_string])
+        runtime.render(tester_no_fallback, 'test_nonexistent_view', [update_string])
 
 
 class SerialDefaultKVS(DictKeyValueStore):

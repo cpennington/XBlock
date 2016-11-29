@@ -56,7 +56,7 @@ class Validation(object):
         Args:
             xblock_id (object): An identification object that must support conversion to unicode.
         """
-        self.messages = []
+        self.messages = []  # type: List[ValidationMessage]
         self.xblock_id = xblock_id
 
     @property
@@ -81,6 +81,7 @@ class Validation(object):
     __nonzero__ = __bool__
 
     def add(self, message):
+        # type: (ValidationMessage) -> None
         """
         Add a new validation message to this instance.
 
@@ -92,6 +93,7 @@ class Validation(object):
         self.messages.append(message)
 
     def add_messages(self, validation):
+        # type: (Validation) -> None
         """
         Adds all the messages in the specified `Validation` object to this instance's
         messages array.

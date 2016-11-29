@@ -3,6 +3,7 @@ This file supports the XBlock service that returns data about users.
 """
 
 from xblock.reference.plugins import Service
+from typing import Any
 
 
 class UserService(Service):
@@ -56,4 +57,4 @@ class XBlockUser(object):
         self.is_current_user = is_current_user
         self.emails = emails or []
         self.full_name = full_name
-        self.opt_attrs = {}
+        self.opt_attrs = {}  # type: Dict[unicode, Any]

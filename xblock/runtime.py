@@ -16,7 +16,7 @@ from StringIO import StringIO
 
 from collections import namedtuple
 
-from typing import Tuple, Type, Dict
+from typing import Tuple, Type, Dict, NewType, Any
 
 from xblock.fields import Field, BlockScope, Scope, ScopeIds, UserScope
 from xblock.field_data import FieldData
@@ -48,6 +48,7 @@ class KeyValueStore(object):
         Stores can use this information however they like to store and retrieve
         data.
         """
+        __slots__ = ()
         def __new__(cls, scope, user_id, block_scope_id, field_name, block_family='xblock.v1'):
             return super(KeyValueStore.Key, cls).__new__(cls, scope, user_id, block_scope_id, field_name, block_family)
 
@@ -122,7 +123,7 @@ class KvsFieldData(FieldData):
     """
 
     def __init__(self, kvs, **kwargs):
-        super(KvsFieldData, self).__init__(**kwargs)
+        super(KvsFieldData, self).__init__(**kwargs)  # type: ignore
         self._kvs = kvs
 
     def __repr__(self):
@@ -365,6 +366,11 @@ class IdGenerator(object):
         raise NotImplementedError()
 
 
+UsageId = NewType('UsageId', unicode)
+DefId = NewType('DefId', unicode)
+BlockType = NewType('BlockType', unicode)
+
+
 class MemoryIdManager(IdReader, IdGenerator):
     """A simple dict-based implementation of IdReader and IdGenerator."""
 
@@ -373,8 +379,8 @@ class MemoryIdManager(IdReader, IdGenerator):
 
     def __init__(self):
         self._ids = itertools.count()
-        self._usages = {}
-        self._definitions = {}
+        self._usages = {}  # type: Dict[UsageId, DefId]
+        self._definitions = {}  # type: Dict[DefId, BlockType]
 
     def _next_id(self, prefix):
         """Generate a new id."""
@@ -572,9 +578,9 @@ class Runtime(object):
         self.default_class = default_class
         self.select = select
 
-        self.user_id = None
+        self.user_id = None  # type: Any
         self.mixologist = Mixologist(mixins)
-        self._view_name = None
+        self._view_name = None  # type: unicode
 
         self.id_generator = id_generator
         if id_generator is None:
@@ -890,7 +896,7 @@ class Runtime(object):
             data['init'] = frag.js_init_fn
             data['runtime-version'] = frag.js_init_version
 
-        json_init = ""
+        json_init = u""
         # TODO/Note: We eventually want to remove: hasattr(frag, 'json_init_args')
         # However, I'd like to maintain backwards-compatibility with older XBlock
         # for at least a little while so as not to adversely effect developers.
@@ -1151,7 +1157,7 @@ class Runtime(object):
         Temporary hardcoded mapping from serialized family id to either `class :XBlock:` or `:XBlockAside`
         """
         for family in [XBlock, XBlockAside]:
-            if family_id == family.entry_point:
+            if family_id == family.entry_point:  # type: ignore
                 return family
         raise ValueError(u'No such family: {}'.format(family_id))
 
@@ -1192,7 +1198,7 @@ class ObjectAggregator(object):
 
 
 # Cache of Mixologist generated classes
-_CLASS_CACHE = {}  # type: Dict[Tuple[Type, Tuple[Type]], Type]
+_CLASS_CACHE = {}  # type: Dict[Tuple[Type, Tuple[Type]], type]
 _CLASS_CACHE_LOCK = threading.RLock()
 
 

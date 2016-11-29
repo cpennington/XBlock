@@ -504,7 +504,7 @@ def test_scope_key():
 
 def test_field_display_name():
     attempts = Integer(display_name='Maximum Problem Attempts')
-    attempts._name = "max_problem_attempts"
+    attempts._name = "max_problem_attempts"  # type: ignore
     assert_equals("Maximum Problem Attempts", attempts.display_name)
 
     boolean_field = Boolean(display_name="boolean field")
@@ -589,10 +589,10 @@ def test_set_incomparable_fields():
 
     class FieldTester(XBlock):
         """Test block for this test."""
-        incomparable = Field(scope=Scope.settings)
+        incomparable = Field(scope=Scope.settings)  # type: Field[Any]
 
     not_timezone_aware = dt.datetime(2015, 1, 1)
-    timezone_aware = dt.datetime(2015, 1, 1, tzinfo=pytz.UTC)
+    timezone_aware = dt.datetime(2015, 1, 1, tzinfo=pytz.utc)
     runtime = TestRuntime(services={'field-data': DictFieldData({})})
     field_tester = FieldTester(runtime, scope_ids=Mock(spec=ScopeIds))
     field_tester.incomparable = not_timezone_aware

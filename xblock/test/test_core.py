@@ -796,27 +796,27 @@ def test_cached_parent():
         pass
 
     runtime = TestRuntime(services={'field-data': DictFieldData({})})
-    runtime.get_block = Mock()
+    runtime.get_block = Mock()  # type: ignore
     block = HasParent(runtime, scope_ids=Mock(spec=ScopeIds))
 
     # block has no parent yet, and we don't need to call the runtime to find
     # that out.
     assert_equals(block.get_parent(), None)
-    assert not runtime.get_block.called
+    assert not runtime.get_block.called  # type: ignore
 
     # Set a parent id for the block.  Get the parent.  Now we have one, and we
     # used runtime.get_block to get it.
     block.parent = "some_parent_id"
     parent = block.get_parent()
     assert_not_equals(parent, None)
-    assert runtime.get_block.called_with("some_parent_id")
+    assert runtime.get_block.called_with("some_parent_id")  # type: ignore
 
     # Get the parent again.  It will be the same parent, and we didn't call the
     # runtime.
-    runtime.get_block.reset_mock()
+    runtime.get_block.reset_mock()  # type: ignore
     parent2 = block.get_parent()
     assert parent2 is parent
-    assert not runtime.get_block.called
+    assert not runtime.get_block.called  # type: ignore
 
 
 def test_json_handler_basic():

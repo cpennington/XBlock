@@ -4,8 +4,12 @@ Internal machinery used to make building XBlock family base classes easier.
 import functools
 import inspect
 
+from typing import TypeVar, Dict, Type, Generic, Any, Callable  # pylint: disable=unused-import
 
-class LazyClassProperty(object):
+T = TypeVar('T')
+
+
+class LazyClassProperty(Generic[T]):
     """
     A descriptor that acts as a class-level @lazy.
 
@@ -14,11 +18,12 @@ class LazyClassProperty(object):
     in the class __dict__.
     """
     def __init__(self, constructor):
+        # type: (Any, Callable[..., T]) -> None
         self.__constructor = constructor
-        self.__cache = {}
-        functools.wraps(self.__constructor)(self)
+        self.__cache = {}  # type: Dict[Type, T]
 
     def __get__(self, instance, owner):
+        # type: (Any, Any, Any) -> T
         if owner not in self.__cache:
             # If __constructor iterates over members, then we don't want to call it
             # again in an infinite loop. So, preseed the __cache with None.

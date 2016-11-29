@@ -10,8 +10,6 @@ from xblock.fields import Scope
 from xblock.runtime import (
     KvsFieldData, KeyValueStore, Runtime, MemoryIdManager
 )
-from xblock.test.tools import unabc
-
 log = logging.getLogger(__name__)
 
 
@@ -89,7 +87,6 @@ class ToyRuntimeKeyValueStore(KeyValueStore):
             self.set(key, value)
 
 
-@unabc("{} is unavailable in ToyRuntime")
 class ToyRuntime(Runtime):
     """
     Access to the toy runtime environment for XBlocks.

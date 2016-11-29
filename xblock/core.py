@@ -127,7 +127,7 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
         """
         Collect the tags from all base classes.
         """
-        class_tags = set()
+        class_tags = set()  # type: Set[unicode]
 
         for base in cls.mro()[1:]:  # pylint: disable=no-member
             class_tags.update(getattr(base, '_class_tags', set()))
@@ -186,7 +186,7 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
             raise TypeError('scope_ids are required')
 
         # Provide backwards compatibility for external access through _field_data
-        super(XBlock, self).__init__(runtime=runtime, scope_ids=scope_ids, field_data=field_data, *args, **kwargs)
+        super(XBlock, self).__init__(runtime=runtime, scope_ids=scope_ids, field_data=field_data, *args, **kwargs)  # type: ignore
 
     def render(self, view, context=None):
         """Render `view` with this block's runtime and the supplied `context`"""
@@ -255,7 +255,7 @@ class XBlockAside(XmlSerializationMixin, ScopedStorageMixin, RuntimeServicesMixi
         """
         # The method declares what views it decorates. We rely on `dir`
         # to handle subclasses and overrides.
-        combined_asides = defaultdict(None)
+        combined_asides = defaultdict(None)  # type: Dict[unicode, unicode]
         for _view_name, view_func in inspect.getmembers(cls, lambda attr: hasattr(attr, '_aside_for')):
             aside_for = getattr(view_func, '_aside_for', [])
             for view in aside_for:

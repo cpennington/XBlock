@@ -10,6 +10,8 @@ import copy
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 
+from typing import Text, Any, Dict
+
 from xblock.exceptions import InvalidScopeError
 
 
@@ -160,7 +162,7 @@ class SplitFieldData(FieldData):
         self._field_data(block, name).set(block, name, value)
 
     def set_many(self, block, update_dict):
-        update_dicts = defaultdict(dict)
+        update_dicts = defaultdict(dict)  # type: Dict[FieldData, Dict[Text, Any]]
         for key, value in update_dict.items():
             update_dicts[self._field_data(block, key)][key] = value
         for field_data, update_dict in update_dicts.items():

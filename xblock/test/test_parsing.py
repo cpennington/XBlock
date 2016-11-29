@@ -109,7 +109,7 @@ class XmlTestMixin(object):
         return output.getvalue()
 
 
-class XmlTest(XmlTestMixin):
+class XmlTest(XmlTestMixin, unittest.TestCase):
     """Helpful things for XML tests."""
     def setUp(self):
         super(XmlTest, self).setUp()

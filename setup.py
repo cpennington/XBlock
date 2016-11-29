@@ -20,6 +20,8 @@ setup(
         'pyyaml',
         'webob',
         'fs',
+        'typing',
+        'enum34',
     ],
     extras_require={
         'django': ['django-pyfs']

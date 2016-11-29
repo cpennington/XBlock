@@ -12,7 +12,7 @@ def run_script(pycode):
     pycode = textwrap.dedent(pycode)
 
     # execute it.
-    globs = {}
+    globs = {}  # type: dict
     exec pycode in globs, globs  # pylint: disable=W0122
 
     return globs

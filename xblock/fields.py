@@ -19,7 +19,8 @@ import json
 import yaml
 import unicodedata
 
-from typing import TypeVar, Generic, Union, Type  # pylint: disable=unused-import
+from enum import Enum
+from typing import Text, TypeVar, Generic, Union, Type, NamedTuple  # pylint: disable=unused-import
 
 from xblock.internal import Nameable
 
@@ -80,7 +81,7 @@ class Sentinel(object):
         return hash(self.name)
 
 
-class BlockScope(object):
+class BlockScope(Enum):
     """
     Enumeration of block scopes.
 
@@ -100,10 +101,10 @@ class BlockScope(object):
         information that is purely about the student.
 
     """
-    USAGE = Sentinel('BlockScope.USAGE')
-    DEFINITION = Sentinel('BlockScope.DEFINITION')
-    TYPE = Sentinel('BlockScope.TYPE')
-    ALL = Sentinel('BlockScope.ALL')
+    USAGE = 'BlockScope.USAGE'
+    DEFINITION = 'BlockScope.DEFINITION'
+    TYPE = 'BlockScope.TYPE'
+    ALL = 'BlockScope.ALL'
 
     @classmethod
     def scopes(cls):
@@ -113,10 +114,16 @@ class BlockScope(object):
         # Why do we need this? This should either
         # * Be bubbled to the places where it is used (AcidXBlock).
         # * Be automatic. Look for all members of a type.
-        return [cls.USAGE, cls.DEFINITION, cls.TYPE, cls.ALL]
+        return list(BlockScope)  # type: ignore
+
+    @property
+    def attr_name(self):
+        """ TODO: Look into namespace collisions. block.name_space == block_name.space
+        """
+        return self.name.lower().replace('.', '_')
 
 
-class UserScope(object):
+class UserScope(Enum):
     """
     Enumeration of user scopes.
 
@@ -137,9 +144,9 @@ class UserScope(object):
         submitted by all students.
 
     """
-    NONE = Sentinel('UserScope.NONE')
-    ONE = Sentinel('UserScope.ONE')
-    ALL = Sentinel('UserScope.ALL')
+    NONE = 'UserScope.NONE'
+    ONE = 'UserScope.ONE'
+    ALL = 'UserScope.ALL'
 
     @classmethod
     def scopes(cls):
@@ -147,13 +154,26 @@ class UserScope(object):
         Return a list of valid/understood class scopes.
         Why do we need this? I believe it is not used anywhere.
         """
-        return [cls.NONE, cls.ONE, cls.ALL]
+        return list(UserScope)  # type: ignore
+
+    @property
+    def attr_name(self):
+        """ TODO: Look into namespace collisions. block.name_space == block_name.space
+        """
+        return self.name.lower().replace('.', '_')
 
 
 UNSET = Sentinel("fields.UNSET")
 
 
-ScopeBase = namedtuple('ScopeBase', 'user block name')
+ScopeBase = NamedTuple(
+    'ScopeBase',
+    [
+        ('user', UserScope),
+        ('block', BlockScope),
+        ('name', Text),
+    ]
+)
 
 
 class Scope(ScopeBase):
@@ -225,10 +245,10 @@ class Scope(ScopeBase):
         if name is None:
             name = u'{}_{}'.format(user, block)
 
-        return ScopeBase.__new__(cls, user, block, name)
+        return ScopeBase.__new__(cls, user, block, name)  # type: ignore
 
     def __init__(self, user, block, name=None):
-        super(Scope, self).__init__(user, block, name)
+        ScopeBase.__init__(self, user, block, name)
 
     children = Sentinel('Scope.children')
     parent = Sentinel('Scope.parent')
@@ -451,7 +471,7 @@ class Field(Nameable, Generic[T]):
         except:  # pylint: disable=bare-except
             message = u"The value {} could not be enforced ({})".format(
                 value, traceback.format_exc().splitlines()[-1])
-            warnings.warn(message, FailingEnforceTypeWarning, stacklevel=3)
+            warnings.warn(message.encode('utf-8'), FailingEnforceTypeWarning, stacklevel=3)
         else:
             try:
                 equal = value == new_value
@@ -460,7 +480,7 @@ class Field(Nameable, Generic[T]):
             if not equal:
                 message = u"The value {} would be enforced to {}".format(
                     value, new_value)
-                warnings.warn(message, ModifyingEnforceTypeWarning, stacklevel=3)
+                warnings.warn(message.encode('utf-8'), ModifyingEnforceTypeWarning, stacklevel=3)
 
         return value
 
@@ -759,7 +779,7 @@ class Boolean(JSONField[bool]):
                                       **kwargs)
 
     def from_json(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, (str, unicode)):
             return value.lower() == 'true'
         else:
             return bool(value)
@@ -895,7 +915,7 @@ class DateTime(JSONField):
         if value is None:
             return None
 
-        if isinstance(value, basestring):
+        if isinstance(value, (str, unicode)):
             # Parser interprets empty string as now by default
             if value == "":
                 return None

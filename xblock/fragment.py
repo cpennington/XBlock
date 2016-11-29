@@ -29,10 +29,10 @@ class Fragment(object):
         #: The html content for this Fragment
         self.content = u""
 
-        self._resources = []
-        self.js_init_fn = None
-        self.js_init_version = None
-        self.json_init_args = None
+        self._resources = []  # type: List[FragmentResource]
+        self.js_init_fn = None  # type: str
+        self.js_init_version = None  # type: int
+        self.json_init_args = None  # type: dict
 
         if content is not None:
             self.add_content(content)
@@ -42,11 +42,13 @@ class Fragment(object):
         r"""
         Returns list of unique `FragmentResource`\s by order of first appearance.
         """
-        seen = set()
-        # seen.add always returns None, so 'not seen.add(x)' is always True,
-        # but will only be called if the value is not already in seen (because
-        # 'and' short-circuits)
-        return [x for x in self._resources if x not in seen and not seen.add(x)]
+        seen = set()  # type: Set[FragmentResource]
+        results = []  # type: List[FragmentResource]
+        for res in self._resources:
+            if res not in seen:
+                seen.add(res)
+                results.append(res)
+        return results
 
     def to_pods(self):
         """
