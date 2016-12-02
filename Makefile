@@ -1,7 +1,7 @@
 PHONY: test docs types quality package
 
 test:
-	coverage run -m nose
+	tox
 
 docs:
 	cd doc && make html
