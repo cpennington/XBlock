@@ -20,9 +20,8 @@ help: ## display this help message
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 
 quality: ## check coding style with pycodestyle and pylint
-	pycodestyle
-	script/max_pylint_violations
-	pylint --py3k xblock
+	tox -e quality
+	tox -e check-format
 
 test: ## run tests on every supported Python/Django combination
 	tox
@@ -49,3 +48,9 @@ upgrade: ## update the pip requirements files to use the latest releases satisfy
 	# Let tox control the Django version for tests
 	sed '/^[dD]jango==/d' requirements/test.txt > requirements/test.tmp
 	mv requirements/test.tmp requirements/test.txt
+
+format:
+	tox -e format
+
+check-format:
+	tox -e check-format
