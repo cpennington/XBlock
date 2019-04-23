@@ -18,6 +18,7 @@ class StubScorableBlock(scorable.ScorableXBlockMixin):
     """
     A very simple scorable block that needs no backing
     """
+
     location = 'Here'
 
     _scoring_error = False
@@ -54,6 +55,7 @@ class RescoreTestCase(TestCase):
     """
     Test scorable block behavior
     """
+
     @ddt.data(True, False)
     def test_basic(self, only_if_higher):
         block = StubScorableBlock(scorable.Score(raw_earned=2.0, raw_possible=2.0))
@@ -64,11 +66,7 @@ class RescoreTestCase(TestCase):
         block.runtime.publish.assert_called_with(
             block,
             'grade',
-            {
-                'value': 1.6,
-                'max_value': 2.0,
-                'only_if_higher': only_if_higher,
-            }
+            {'value': 1.6, 'max_value': 2.0, 'only_if_higher': only_if_higher},
         )
 
     def test_not_yet_scored(self):

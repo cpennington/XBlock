@@ -15,10 +15,7 @@ from six import text_type
 
 from xblock.core import XBlock
 from xblock.fields import FailingEnforceTypeWarning, Scope, String, ScopeIds
-from xblock.runtime import (
-    DictKeyValueStore,
-    KvsFieldData,
-)
+from xblock.runtime import DictKeyValueStore, KvsFieldData
 from xblock.test.tools import TestRuntime
 
 
@@ -26,6 +23,7 @@ class TestXBlockStringFieldDefaultTranslation(TestCase):
     """
     Tests for an XBlock String field with a lazily-translated default value.
     """
+
     def test_lazy_translation(self):
         with warnings.catch_warnings(record=True) as caught_warnings:
             warnings.simplefilter('always', FailingEnforceTypeWarning)
@@ -34,8 +32,11 @@ class TestXBlockStringFieldDefaultTranslation(TestCase):
                 """
                 Set up a class that contains a single string field with a translated default.
                 """
+
                 STR_DEFAULT_ENG = 'ENG: String to be translated'
-                str_field = String(scope=Scope.settings, default=_('ENG: String to be translated'))
+                str_field = String(
+                    scope=Scope.settings, default=_('ENG: String to be translated')
+                )
 
         # No FailingEnforceTypeWarning should have been triggered
         assert not caught_warnings
@@ -48,7 +49,9 @@ class TestXBlockStringFieldDefaultTranslation(TestCase):
         # Change language to 'de'.
         user_language = 'de'
         with translation.override(user_language):
-            tester = runtime.construct_xblock_from_class(XBlockTest, ScopeIds('s0', 'XBlockTest', 'd0', 'u0'))
+            tester = runtime.construct_xblock_from_class(
+                XBlockTest, ScopeIds('s0', 'XBlockTest', 'd0', 'u0')
+            )
 
             # Assert instantiated XBlock str_field value is not yet evaluated.
             assert 'django.utils.functional.' in str(type(tester.str_field))

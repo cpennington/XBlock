@@ -39,10 +39,7 @@ class ValidationMessage(object):
         Returns:
             dict: A dict representation that is json-serializable.
         """
-        return {
-            "type": self.type,
-            "text": self.text
-        }
+        return {"type": self.type, "text": self.text}
 
 
 class Validation(object):
@@ -118,5 +115,5 @@ class Validation(object):
         return {
             "xblock_id": six.text_type(self.xblock_id),
             "messages": [message.to_json() for message in self.messages],
-            "empty": self.empty
+            "empty": self.empty,
         }

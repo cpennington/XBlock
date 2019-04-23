@@ -22,6 +22,7 @@ class TestingBlock(XBlock):
     do the right thing with a split fielddata.
 
     """
+
     __test__ = False
     content = String(scope=Scope.content)
     settings = String(scope=Scope.settings)
@@ -32,6 +33,7 @@ class TestSplitFieldData(object):
     """
     Tests of :ref:`SplitFieldData`.
     """
+
     # pylint: disable=attribute-defined-outside-init
     def setup_method(self):
         """
@@ -39,15 +41,12 @@ class TestSplitFieldData(object):
         """
         self.content = Mock()
         self.settings = Mock()
-        self.split = SplitFieldData({
-            Scope.content: self.content,
-            Scope.settings: self.settings
-        })
-        self.runtime = TestRuntime(services={'field-data': self.split})
-        self.block = TestingBlock(
-            runtime=self.runtime,
-            scope_ids=Mock(),
+        self.split = SplitFieldData(
+            {Scope.content: self.content, Scope.settings: self.settings}
         )
+        self.runtime = TestRuntime(services={'field-data': self.split})
+        self.block = TestingBlock(runtime=self.runtime, scope_ids=Mock())
+
     # pylint: enable=attribute-defined-outside-init
 
     def test_get(self):
@@ -71,9 +70,15 @@ class TestSplitFieldData(object):
         assert not self.settings.has.called
 
     def test_set_many(self):
-        self.split.set_many(self.block, {'content': 'new content', 'settings': 'new settings'})
-        self.content.set_many.assert_called_once_with(self.block, {'content': 'new content'})
-        self.settings.set_many.assert_called_once_with(self.block, {'settings': 'new settings'})
+        self.split.set_many(
+            self.block, {'content': 'new content', 'settings': 'new settings'}
+        )
+        self.content.set_many.assert_called_once_with(
+            self.block, {'content': 'new content'}
+        )
+        self.settings.set_many.assert_called_once_with(
+            self.block, {'settings': 'new settings'}
+        )
 
     def test_invalid_scope(self):
         with pytest.raises(InvalidScopeError):
@@ -89,6 +94,7 @@ class TestReadOnlyFieldData(object):
     """
     Tests of :ref:`ReadOnlyFieldData`.
     """
+
     # pylint: disable=attribute-defined-outside-init
     def setup_method(self):
         """
@@ -97,10 +103,8 @@ class TestReadOnlyFieldData(object):
         self.source = Mock()
         self.read_only = ReadOnlyFieldData(self.source)
         self.runtime = TestRuntime(services={'field-data': self.read_only})
-        self.block = TestingBlock(
-            runtime=self.runtime,
-            scope_ids=Mock(),
-        )
+        self.block = TestingBlock(runtime=self.runtime, scope_ids=Mock())
+
     # pylint: enable=attribute-defined-outside-init
 
     def test_get(self):
@@ -120,7 +124,9 @@ class TestReadOnlyFieldData(object):
             self.read_only.set_many(self.block, {'content': 'foo', 'settings': 'bar'})
 
     def test_default(self):
-        assert self.source.default.return_value == self.read_only.default(self.block, 'content')
+        assert self.source.default.return_value == self.read_only.default(
+            self.block, 'content'
+        )
         self.source.default.assert_called_once_with(self.block, 'content')
 
     def test_has(self):

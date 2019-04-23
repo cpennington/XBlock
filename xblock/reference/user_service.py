@@ -14,6 +14,7 @@ class UserService(Service):
     This service returns personally-identifiable information (PII).  If a runtime needed to control exposure to a
     user's PII, the runtime would deny access to this XBlock service.
     """
+
     def get_current_user(self):
         """
         This is default, example implementation.  Anything real needs to override
@@ -53,6 +54,7 @@ class XBlockUser(object):
 
     All of this data should be considered personally-identifiable information (PII).
     """
+
     def __init__(self, is_current_user=False, emails=None, full_name=None):
         # Set standardized attributes
         self.is_current_user = is_current_user

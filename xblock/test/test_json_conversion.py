@@ -19,6 +19,7 @@ from xblock.test.tools import TestRuntime
 
 class TestJSONConversionField(Field):
     """Field for testing json conversion"""
+
     __test__ = False
 
     def from_json(self, value):
@@ -26,14 +27,12 @@ class TestJSONConversionField(Field):
         return set(value['$vals'])
 
     def to_json(self, value):
-        return {
-            '$type': 'set',
-            '$vals': sorted(value)
-        }
+        return {'$type': 'set', '$vals': sorted(value)}
 
 
 class TestBlock(XBlock):
     """XBlock for testing json conversion"""
+
     __test__ = False
     field_a = TestJSONConversionField(scope=Scope.content)
     field_b = TestJSONConversionField(scope=Scope.content)
@@ -41,6 +40,7 @@ class TestBlock(XBlock):
 
 class TestModel(DictFieldData):
     """ModelData for testing json conversion"""
+
     __test__ = False
 
     def default(self, block, name):
@@ -57,11 +57,11 @@ class TestJsonConversion(object):
         """
         Setup for each test method in this class.
         """
-        field_data = TestModel({
-            'field_a': {'$type': 'set', '$vals': [1, 2, 3]}
-        })
+        field_data = TestModel({'field_a': {'$type': 'set', '$vals': [1, 2, 3]}})
         runtime = TestRuntime(services={'field-data': field_data})
-        self.block = TestBlock(runtime, scope_ids=Mock(spec=ScopeIds))  # pylint: disable=attribute-defined-outside-init
+        self.block = TestBlock(
+            runtime, scope_ids=Mock(spec=ScopeIds)
+        )  # pylint: disable=attribute-defined-outside-init
 
     def test_get(self):
         # Test field with a value
@@ -74,5 +74,6 @@ class TestJsonConversion(object):
         self.block.field_b = set([5, 6, 5])
         self.block.save()
         assert isinstance(self.block.field_b, set)
-        assert {'$type': 'set', '$vals': [5, 6]} == \
-            self.block._field_data.get(self.block, 'field_b')
+        assert {'$type': 'set', '$vals': [5, 6]} == self.block._field_data.get(
+            self.block, 'field_b'
+        )

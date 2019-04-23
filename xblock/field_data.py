@@ -111,6 +111,7 @@ class DictFieldData(FieldData):
     """
     A FieldData that uses a single supplied dictionary to store fields by name.
     """
+
     def __init__(self, data):
         self._data = data
 
@@ -184,6 +185,7 @@ class ReadOnlyFieldData(FieldData):
     A FieldData that wraps another FieldData an makes all calls to set and delete
     raise :class:`~xblock.exceptions.InvalidScopeError`s.
     """
+
     def __init__(self, source):
         self._source = source
 
@@ -191,10 +193,14 @@ class ReadOnlyFieldData(FieldData):
         return self._source.get(block, name)
 
     def set(self, block, name, value):
-        raise InvalidScopeError("{block}.{name} is read-only, cannot set".format(block=block, name=name))
+        raise InvalidScopeError(
+            "{block}.{name} is read-only, cannot set".format(block=block, name=name)
+        )
 
     def delete(self, block, name):
-        raise InvalidScopeError("{block}.{name} is read-only, cannot delete".format(block=block, name=name))
+        raise InvalidScopeError(
+            "{block}.{name} is read-only, cannot delete".format(block=block, name=name)
+        )
 
     def has(self, block, name):
         return self._source.has(block, name)

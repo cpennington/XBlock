@@ -14,16 +14,19 @@ from xblock.plugin import AmbiguousPluginError, PluginMissingError
 
 class AmbiguousBlock1(XBlock):
     """A dummy class to find as a plugin."""
+
     pass
 
 
 class AmbiguousBlock2(XBlock):
     """A dummy class to find as a plugin."""
+
     pass
 
 
 class UnambiguousBlock(XBlock):
     """A dummy class to find as a plugin."""
+
     pass
 
 
@@ -47,6 +50,7 @@ def test_ambiguous_plugins():
     # We can use our own function as the select function.
     class MyOwnException(Exception):
         """We'll raise this from `boom`."""
+
         pass
 
     def boom(identifier, entry_points):

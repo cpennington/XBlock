@@ -35,9 +35,7 @@ setup(
         'webob',
         'web-fragments',
     ],
-    extras_require={
-        'django': ['django-pyfs >= 1.0.5', 'lazy']
-    },
+    extras_require={'django': ['django-pyfs >= 1.0.5', 'lazy']},
     author='edX',
     author_email='oscm@edx.org',
     url='https://github.com/edx/XBlock',
@@ -55,5 +53,5 @@ setup(
         'Programming Language :: Python :: 2.7',
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
-    ]
+    ],
 )

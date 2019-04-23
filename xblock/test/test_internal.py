@@ -13,8 +13,10 @@ class TestLazyClassProperty(TestCase):
     """
     Tests of @class_lazy.
     """
+
     class Base(object):
         """Test class that uses @class_lazy."""
+
         @class_lazy
         def isolated_dict(cls):  # pylint: disable=no-self-argument
             "Return a different dict for each subclass."
@@ -22,6 +24,7 @@ class TestLazyClassProperty(TestCase):
 
     class Derived(Base):
         """Test class that inherits a @class_lazy definition."""
+
         pass
 
     def test_isolation(self):
@@ -32,12 +35,14 @@ class TestLazyClassProperty(TestCase):
 
 class TestDescriptor(Nameable):
     """Descriptor that returns itself for introspection in tests."""
+
     def __get__(self, instance, owner):
         return self
 
 
 class TestGetSetDescriptor(Nameable):
     """Descriptor that returns itself for introspection in tests."""
+
     def __get__(self, instance, owner):
         return self
 
@@ -64,6 +69,7 @@ class NamingTester(six.with_metaclass(NamedAttributesMetaclass, object)):
 
 class InheritedNamingTester(NamingTester):
     """Class with several inherited descriptors that should get names."""
+
     inherited = TestDescriptor()
 
 
@@ -74,10 +80,14 @@ class TestNamedDescriptorsMetaclass(TestCase):
         self.assertEqual('test_descriptor', NamingTester.test_descriptor.__name__)
 
     def test_named_getset_descriptor(self):
-        self.assertEqual('test_getset_descriptor', NamingTester.test_getset_descriptor.__name__)
+        self.assertEqual(
+            'test_getset_descriptor', NamingTester.test_getset_descriptor.__name__
+        )
 
     def test_inherited_naming(self):
-        self.assertEqual('test_descriptor', InheritedNamingTester.test_descriptor.__name__)
+        self.assertEqual(
+            'test_descriptor', InheritedNamingTester.test_descriptor.__name__
+        )
         self.assertEqual('inherited', InheritedNamingTester.inherited.__name__)
 
     def test_unnamed_attribute(self):

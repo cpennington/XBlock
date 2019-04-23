@@ -18,6 +18,7 @@ class LazyClassProperty(object):
     executing the decorated method once, and then storing the result
     in the class __dict__.
     """
+
     def __init__(self, constructor):
         self.__constructor = constructor
         self.__cache = {}
@@ -40,6 +41,7 @@ class NamedAttributesMetaclass(type):
     A metaclass which adds the __name__ attribute to all Nameable attributes
     which are attributes of the instantiated class, or of its baseclasses.
     """
+
     def __new__(mcs, name, bases, attrs):
         # Iterate over the attrs before they're bound to the class
         # so that we don't accidentally trigger any __get__ methods
@@ -63,6 +65,7 @@ class Nameable(object):
     :class:`.NamedAttributesMetaclass`, will be assigned a `__name__`
     attribute based on what class attribute they are bound to.
     """
+
     if six.PY2:
         __slots__ = ('__name__',)
     __name__ = None

@@ -8,6 +8,7 @@ class XBlockCompletionMode(object):
     """
     Enumeration for completion modes.
     """
+
     COMPLETABLE = "completable"
     AGGREGATOR = "aggregator"
     EXCLUDED = "excluded"
@@ -47,19 +48,22 @@ class CompletableXBlockMixin(object):
             None
         """
         completion_mode = XBlockCompletionMode.get_mode(self)
-        if not self.has_custom_completion or completion_mode != XBlockCompletionMode.COMPLETABLE:
+        if (
+            not self.has_custom_completion
+            or completion_mode != XBlockCompletionMode.COMPLETABLE
+        ):
             raise AttributeError(
                 "Using `emit_completion` requires `has_custom_completion == True` (was {}) "
                 "and `completion_mode == 'completable'` (was {})".format(
-                    self.has_custom_completion, completion_mode,
+                    self.has_custom_completion, completion_mode
                 )
             )
 
         if completion_percent is None or not 0.0 <= completion_percent <= 1.0:
-            raise ValueError("Completion percent must be in [0.0; 1.0] interval, {} given".format(completion_percent))
+            raise ValueError(
+                "Completion percent must be in [0.0; 1.0] interval, {} given".format(
+                    completion_percent
+                )
+            )
 
-        self.runtime.publish(
-            self,
-            'completion',
-            {'completion': completion_percent},
-        )
+        self.runtime.publish(self, 'completion', {'completion': completion_percent})

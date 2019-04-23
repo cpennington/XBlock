@@ -18,17 +18,24 @@ from lxml import etree
 import six
 from webob import Response
 
-from xblock.exceptions import JsonHandlerError, KeyValueMultiSaveError, XBlockSaveError, FieldDataDeprecationWarning
+from xblock.exceptions import (
+    JsonHandlerError,
+    KeyValueMultiSaveError,
+    XBlockSaveError,
+    FieldDataDeprecationWarning,
+)
 from xblock.fields import Field, Reference, Scope, ReferenceList
 from xblock.internal import class_lazy, NamedAttributesMetaclass
 
 
 # OrderedDict is used so that namespace attributes are put in predictable order
 # This allows for simple string equality assertions in tests and have no other effects
-XML_NAMESPACES = OrderedDict([
-    ("option", "http://code.edx.org/xblock/option"),
-    ("block", "http://code.edx.org/xblock/block"),
-])
+XML_NAMESPACES = OrderedDict(
+    [
+        ("option", "http://code.edx.org/xblock/option"),
+        ("block", "http://code.edx.org/xblock/block"),
+    ]
+)
 
 
 class HandlersMixin(object):
@@ -54,12 +61,15 @@ class HandlersMixin(object):
         This decorator will return a 400 status code if the body contains
         invalid JSON.
         """
+
         @cls.handler
         @functools.wraps(func)
         def wrapper(self, request, suffix=''):
             """The wrapper function `json_handler` returns."""
             if request.method != "POST":
-                return JsonHandlerError(405, "Method must be POST").get_response(allow=["POST"])
+                return JsonHandlerError(405, "Method must be POST").get_response(
+                    allow=["POST"]
+                )
             try:
                 request_json = json.loads(request.body)
             except ValueError:
@@ -71,7 +81,12 @@ class HandlersMixin(object):
             if isinstance(response, Response):
                 return response
             else:
-                return Response(json.dumps(response), content_type='application/json', charset='utf8')
+                return Response(
+                    json.dumps(response),
+                    content_type='application/json',
+                    charset='utf8',
+                )
+
         return wrapper
 
     @classmethod
@@ -81,7 +96,7 @@ class HandlersMixin(object):
 
         The wrapped function must return a `webob.Response` object.
         """
-        func._is_xblock_handler = True      # pylint: disable=protected-access
+        func._is_xblock_handler = True  # pylint: disable=protected-access
         return func
 
     def handle(self, handler_name, request, suffix=''):
@@ -126,19 +141,27 @@ class RuntimeServicesMixin(object):
     @classmethod
     def needs(cls, *service_names):
         """A class decorator to indicate that an XBlock class needs particular services."""
-        def _decorator(cls_):                                # pylint: disable=missing-docstring
+
+        def _decorator(cls_):  # pylint: disable=missing-docstring
             for service_name in service_names:
-                cls_._services_requested[service_name] = "need"  # pylint: disable=protected-access
+                cls_._services_requested[
+                    service_name
+                ] = "need"  # pylint: disable=protected-access
             return cls_
+
         return _decorator
 
     @classmethod
     def wants(cls, *service_names):
         """A class decorator to indicate that an XBlock class wants particular services."""
-        def _decorator(cls_):                                # pylint: disable=missing-docstring
+
+        def _decorator(cls_):  # pylint: disable=missing-docstring
             for service_name in service_names:
-                cls_._services_requested[service_name] = "want"  # pylint: disable=protected-access
+                cls_._services_requested[
+                    service_name
+                ] = "want"  # pylint: disable=protected-access
             return cls_
+
         return _decorator
 
     @classmethod
@@ -160,7 +183,9 @@ class RuntimeServicesMixin(object):
 
 
 @RuntimeServicesMixin.needs('field-data')
-class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeServicesMixin)):
+class ScopedStorageMixin(
+    six.with_metaclass(NamedAttributesMetaclass, RuntimeServicesMixin)
+):
     """
     This mixin provides scope for Fields and the associated Scoped storage.
     """
@@ -188,7 +213,9 @@ class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeSer
 
         # For this class, loop through all attributes not named 'fields',
         # find those of type Field, and save them to the 'fields' dict
-        for attr_name, attr_value in inspect.getmembers(local, lambda attr: isinstance(attr, Field)):
+        for attr_name, attr_value in inspect.getmembers(
+            local, lambda attr: isinstance(attr, Field)
+        ):
             fields[attr_name] = attr_value
 
         return fields
@@ -208,14 +235,16 @@ class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeSer
             warnings.warn(
                 "Setting _field_data via the constructor is deprecated, please use a Runtime service",
                 FieldDataDeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             # Storing _field_data instead of _deprecated_per_instance_field_data allows subclasses to
             # continue to override this behavior (for instance, the way that edx-platform's XModule does
             # in order to proxy to XBlock).
             self._field_data = field_data
         else:
-            self._deprecated_per_instance_field_data = None  # pylint: disable=invalid-name
+            self._deprecated_per_instance_field_data = (
+                None
+            )  # pylint: disable=invalid-name
 
         self._field_data_cache = {}
         self._dirty_fields = {}
@@ -241,7 +270,11 @@ class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeSer
 
         Deprecated.
         """
-        warnings.warn("Setting _field_data is deprecated", FieldDataDeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Setting _field_data is deprecated",
+            FieldDataDeprecationWarning,
+            stacklevel=2,
+        )
         self._deprecated_per_instance_field_data = field_data
 
     def save(self):
@@ -262,14 +295,17 @@ class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeSer
         fields = [self.fields[field_name] for field_name in field_names]
         fields_to_save_json = {}
         for field in fields:
-            fields_to_save_json[field.name] = field.to_json(self._field_data_cache[field.name])
+            fields_to_save_json[field.name] = field.to_json(
+                self._field_data_cache[field.name]
+            )
 
         try:
             # Throws KeyValueMultiSaveError if things go wrong
             self._field_data.set_many(self, fields_to_save_json)
         except KeyValueMultiSaveError as save_error:
-            saved_fields = [field for field in fields
-                            if field.name in save_error.saved_field_names]  # pylint: disable=exception-escape
+            saved_fields = [
+                field for field in fields if field.name in save_error.saved_field_names
+            ]  # pylint: disable=exception-escape
             for field in saved_fields:
                 # should only find one corresponding field
                 fields.remove(field)
@@ -328,7 +364,7 @@ class ScopedStorageMixin(six.with_metaclass(NamedAttributesMetaclass, RuntimeSer
         return "<%s @%04X%s>" % (
             self.__class__.__name__,
             id(self) % 0xFFFF,
-            ','.join(attrs)
+            ','.join(attrs),
         )
 
 
@@ -338,11 +374,14 @@ class ChildrenModelMetaclass(ScopedStorageMixin.__class__):
     field with a children scope.
 
     """
+
     def __new__(mcs, name, bases, attrs):
-        if (attrs.get('has_children', False) or any(getattr(base, 'has_children', False) for base in bases)):
+        if attrs.get('has_children', False) or any(
+            getattr(base, 'has_children', False) for base in bases
+        ):
             attrs['children'] = ReferenceList(
-                help='The ids of the children of this XBlock',
-                scope=Scope.children)
+                help='The ids of the children of this XBlock', scope=Scope.children
+            )
         else:
             attrs['has_children'] = False
 
@@ -354,7 +393,9 @@ class HierarchyMixin(six.with_metaclass(ChildrenModelMetaclass, ScopedStorageMix
     This adds Fields for parents and children.
     """
 
-    parent = Reference(help='The id of the parent of this XBlock', default=None, scope=Scope.parent)
+    parent = Reference(
+        help='The id of the parent of this XBlock', default=None, scope=Scope.parent
+    )
 
     def __init__(self, **kwargs):
         # A cache of the parent block, retrieved from .parent
@@ -568,6 +609,7 @@ class ViewsMixin(object):
     """
     This mixin provides decorators that can be used on xBlock view methods.
     """
+
     @classmethod
     def supports(cls, *functionalities):
         """
@@ -578,6 +620,7 @@ class ViewsMixin(object):
             functionalities: String identifiers for the functionalities of the view.
                 For example: "multi_device".
         """
+
         def _decorator(view):
             """
             Internal decorator that updates the given view's list of supported
@@ -589,6 +632,7 @@ class ViewsMixin(object):
             for functionality in functionalities:
                 view._supports.add(functionality)
             return view
+
         return _decorator
 
     def has_support(self, view, functionality):
@@ -609,4 +653,6 @@ class ViewsMixin(object):
         Returns:
             True or False
         """
-        return hasattr(view, "_supports") and functionality in view._supports  # pylint: disable=protected-access
+        return (
+            hasattr(view, "_supports") and functionality in view._supports
+        )  # pylint: disable=protected-access

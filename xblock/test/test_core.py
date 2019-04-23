@@ -32,15 +32,13 @@ from xblock.field_data import FieldData, DictFieldData
 from xblock.mixins import ScopedStorageMixin
 from xblock.runtime import Runtime
 
-from xblock.test.tools import (
-    WarningTestMixin,
-    TestRuntime,
-)
+from xblock.test.tools import WarningTestMixin, TestRuntime
 
 
 def test_field_access():
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         field_a = Integer(scope=Scope.settings)
         field_b = Integer(scope=Scope.content, default=10)
         field_c = Integer(scope=Scope.user_state, default=42)
@@ -49,7 +47,9 @@ def test_field_access():
 
     field_data = DictFieldData({'field_a': 5, 'float_a': 6.1, 'field_x': 15})
 
-    field_tester = FieldTester(TestRuntime(services={'field-data': field_data}), scope_ids=Mock())
+    field_tester = FieldTester(
+        TestRuntime(services={'field-data': field_data}), scope_ids=Mock()
+    )
     # Verify that the fields have been set
     assert field_tester.field_a == 5
     assert field_tester.field_b == 10
@@ -98,13 +98,16 @@ def test_list_field_access():
     # Check that lists are correctly saved when not directly set
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         field_a = List(scope=Scope.settings)
         field_b = List(scope=Scope.content, default=[1, 2, 3])
         field_c = List(scope=Scope.content, default=[4, 5, 6])
         field_d = List(scope=Scope.settings)
 
     field_data = DictFieldData({'field_a': [200], 'field_b': [11, 12, 13]})
-    field_tester = FieldTester(TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds))
+    field_tester = FieldTester(
+        TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds)
+    )
 
     # Check initial values have been set properly
     assert [200] == field_tester.field_a
@@ -152,12 +155,15 @@ def test_set_field_access():
     # Check that sets are correctly saved when not directly set
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         field_a = Set(scope=Scope.settings)
         field_b = Set(scope=Scope.content, default=[1, 2, 3])
         field_c = Set(scope=Scope.content, default=[4, 5, 6])
         field_d = Set(scope=Scope.settings)
 
-    field_tester = FieldTester(MagicMock(), DictFieldData({'field_a': [200], 'field_b': [11, 12, 13]}), Mock())
+    field_tester = FieldTester(
+        MagicMock(), DictFieldData({'field_a': [200], 'field_b': [11, 12, 13]}), Mock()
+    )
 
     # Check initial values have been set properly
     assert set([200]) == field_tester.field_a
@@ -196,7 +202,9 @@ def test_set_field_access():
     # Now, the fields should be updated in the underlying kvstore
 
     assert set([200, 1]) == field_tester._field_data.get(field_tester, 'field_a')
-    assert set([11, 12, 13, 14]) == field_tester._field_data.get(field_tester, 'field_b')
+    assert set([11, 12, 13, 14]) == field_tester._field_data.get(
+        field_tester, 'field_b'
+    )
     assert set([4, 6]) == field_tester._field_data.get(field_tester, 'field_c')
     assert set([1]) == field_tester._field_data.get(field_tester, 'field_d')
 
@@ -206,13 +214,14 @@ def test_mutable_none_values():
     # save properly.
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         field_a = List(scope=Scope.settings)
         field_b = List(scope=Scope.settings)
         field_c = List(scope=Scope.content, default=None)
 
     field_tester = FieldTester(
         TestRuntime(services={'field-data': DictFieldData({'field_a': None})}),
-        scope_ids=Mock(spec=ScopeIds)
+        scope_ids=Mock(spec=ScopeIds),
     )
     # Set fields b & c to None
     field_tester.field_b = None
@@ -237,20 +246,18 @@ def test_dict_field_access():
     # Check that dicts are correctly saved when not directly set
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         field_a = Dict(scope=Scope.settings)
         field_b = Dict(scope=Scope.content, default={'a': 1, 'b': 2, 'c': 3})
         field_c = Dict(scope=Scope.content, default={'a': 4, 'b': 5, 'c': 6})
         field_d = Dict(scope=Scope.settings)
 
-    field_data = DictFieldData({
-        'field_a': {'a': 200},
-        'field_b': {'a': 11, 'b': 12, 'c': 13}
-    })
+    field_data = DictFieldData(
+        {'field_a': {'a': 200}, 'field_b': {'a': 11, 'b': 12, 'c': 13}}
+    )
 
     field_tester = FieldTester(
-        TestRuntime(services={'field-data': field_data}),
-        None,
-        Mock()
+        TestRuntime(services={'field-data': field_data}), None, Mock()
     )
 
     # Check initial values have been set properly
@@ -288,7 +295,9 @@ def test_dict_field_access():
 
     # Now, the fields should be updated in the underlying kvstore
     assert {'a': 250} == field_data.get(field_tester, 'field_a')
-    assert {'a': 11, 'b': 12, 'c': 13, 'd': 14} == field_data.get(field_tester, 'field_b')
+    assert {'a': 11, 'b': 12, 'c': 13, 'd': 14} == field_data.get(
+        field_tester, 'field_b'
+    )
     assert {'a': 0, 'b': 5, 'c': 6} == field_data.get(field_tester, 'field_c')
     assert {'new': 'value'} == field_data.get(field_tester, 'field_d')
 
@@ -297,13 +306,16 @@ def test_default_values():
     # Check that values that are deleted are restored to their default values
     class FieldTester(XBlock):
         """Test XBlock for field access testing"""
+
         dic1 = Dict(scope=Scope.settings)
         dic2 = Dict(scope=Scope.content, default={'a': 1, 'b': 2, 'c': 3})
         list1 = List(scope=Scope.settings)
         list2 = List(scope=Scope.content, default=[1, 2, 3])
 
     field_data = DictFieldData({'dic1': {'a': 200}, 'list1': ['a', 'b']})
-    field_tester = FieldTester(TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds))
+    field_tester = FieldTester(
+        TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds)
+    )
 
     assert {'a': 200} == field_tester.dic1
     assert {'a': 1, 'b': 2, 'c': 3} == field_tester.dic2
@@ -348,6 +360,7 @@ def test_json_field_access():
 
     class Date(Field):
         """Date needs to convert between JSON-compatible persistence and a datetime object"""
+
         def from_json(self, field):
             """Convert a string representation of a date to a datetime object"""
             return datetime.strptime(field, "%m/%d/%Y")
@@ -364,7 +377,7 @@ def test_json_field_access():
 
     field_tester = FieldTester(
         runtime=TestRuntime(services={'field-data': DictFieldData({})}),
-        scope_ids=MagicMock(spec=ScopeIds)
+        scope_ids=MagicMock(spec=ScopeIds),
     )
 
     # Check initial values
@@ -390,8 +403,14 @@ def test_defaults_not_shared():
 
         field_a = List(scope=Scope.settings)
 
-    field_tester_a = FieldTester(TestRuntime(services={'field-data': DictFieldData({})}), scope_ids=Mock(spec=ScopeIds))
-    field_tester_b = FieldTester(TestRuntime(services={'field-data': DictFieldData({})}), scope_ids=Mock(spec=ScopeIds))
+    field_tester_a = FieldTester(
+        TestRuntime(services={'field-data': DictFieldData({})}),
+        scope_ids=Mock(spec=ScopeIds),
+    )
+    field_tester_b = FieldTester(
+        TestRuntime(services={'field-data': DictFieldData({})}),
+        scope_ids=Mock(spec=ScopeIds),
+    )
 
     field_tester_a.field_a.append(1)
     assert [1] == field_tester_a.field_a
@@ -407,6 +426,7 @@ def test_object_identity():
     # Check that values that are modified are what is returned
     class FieldTester(ScopedStorageMixin):
         """Toy class for ModelMetaclass and field access testing"""
+
         field_a = List(scope=Scope.settings)
 
     def mock_default(block, name):  # pylint: disable=unused-argument
@@ -424,7 +444,7 @@ def test_object_identity():
     field_data.default = mock_default
     field_tester = FieldTester(
         runtime=TestRuntime(services={'field-data': field_data}),
-        scope_ids=MagicMock(spec=ScopeIds)
+        scope_ids=MagicMock(spec=ScopeIds),
     )
     value = field_tester.field_a
     assert value == field_tester.field_a
@@ -447,6 +467,7 @@ def test_caching_is_per_instance():
     # Test that values cached for one instance do not appear on another
     class FieldTester(ScopedStorageMixin):
         """Toy class for ModelMetaclass and field access testing"""
+
         field_a = List(scope=Scope.settings)
 
     field_data = MagicMock(spec=FieldData)
@@ -457,11 +478,11 @@ def test_caching_is_per_instance():
     # in one instance doesn't affect values stored in others.
     field_tester_a = FieldTester(
         runtime=TestRuntime(services={'field-data': field_data}),
-        scope_ids=MagicMock(spec=ScopeIds)
+        scope_ids=MagicMock(spec=ScopeIds),
     )
     field_tester_b = FieldTester(
         runtime=TestRuntime(services={'field-data': field_data}),
-        scope_ids=MagicMock(spec=ScopeIds)
+        scope_ids=MagicMock(spec=ScopeIds),
     )
     value = field_tester_a.field_a
     assert value == field_tester_a.field_a
@@ -478,6 +499,7 @@ def test_field_serialization():
         """
         Specify a custom field that defines its own serialization
         """
+
         def from_json(self, value):
             return value['value']
 
@@ -486,16 +508,13 @@ def test_field_serialization():
 
     class FieldTester(XBlock):
         """Test XBlock for field serialization testing"""
+
         field = CustomField()
 
-    field_data = DictFieldData({
-        'field': {'value': 4}
-    })
+    field_data = DictFieldData({'field': {'value': 4}})
 
     field_tester = FieldTester(
-        TestRuntime(services={'field-data': field_data}),
-        None,
-        Mock(),
+        TestRuntime(services={'field-data': field_data}), None, Mock()
     )
 
     assert field_tester.field == 4
@@ -510,6 +529,7 @@ def test_class_tags():
 
     class Sub1Block(XBlock):
         """Toy XBlock"""
+
         pass
 
     sub1block = Sub1Block(None, None, None)
@@ -518,6 +538,7 @@ def test_class_tags():
     @XBlock.tag("cat dog")
     class Sub2Block(Sub1Block):
         """Toy XBlock"""
+
         pass
 
     sub2block = Sub2Block(None, None, None)
@@ -525,6 +546,7 @@ def test_class_tags():
 
     class Sub3Block(Sub2Block):
         """Toy XBlock"""
+
         pass
 
     sub3block = Sub3Block(None, None, None)
@@ -533,10 +555,12 @@ def test_class_tags():
     @XBlock.tag("mixin")
     class MixinBlock(XBlock):
         """Toy XBlock"""
+
         pass
 
     class Sub4Block(MixinBlock, Sub3Block):
         """Toy XBlock"""
+
         pass
 
     sub4block = Sub4Block(None, None, None)
@@ -544,18 +568,20 @@ def test_class_tags():
 
 
 def test_loading_tagged_classes():
-
     @XBlock.tag("thetag")
     class HasTag1(XBlock):
         """Toy XBlock"""
+
         pass
 
     class HasTag2(HasTag1):
         """Toy XBlock"""
+
         pass
 
     class HasntTag(XBlock):
         """Toy XBlock"""
+
         pass
 
     the_classes = [('hastag1', HasTag1), ('hastag2', HasTag2), ('hasnttag', HasntTag)]
@@ -577,11 +603,14 @@ def setup_save_failure(set_many):
         """
         Test XBlock with three fields
         """
+
         field_a = Integer(scope=Scope.settings)
         field_b = Integer(scope=Scope.content, default=10)
         field_c = Integer(scope=Scope.user_state, default=42)
 
-    field_tester = FieldTester(TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds))
+    field_tester = FieldTester(
+        TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds)
+    )
     return field_tester
 
 
@@ -636,11 +665,14 @@ def test_xblock_write_then_delete():
     # a call to `XBlock.save`
     class FieldTester(XBlock):
         """Test XBlock with two fields"""
+
         field_a = Integer(scope=Scope.settings)
         field_b = Integer(scope=Scope.content, default=10)
 
     field_data = DictFieldData({'field_a': 5})
-    field_tester = FieldTester(TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds))
+    field_tester = FieldTester(
+        TestRuntime(services={'field-data': field_data}), scope_ids=Mock(spec=ScopeIds)
+    )
 
     # Verify that the fields have been set correctly
     assert field_tester.field_a == 5
@@ -687,11 +719,16 @@ def test_get_mutable_mark_dirty():
     if the field has never been set. If the field has been set, ensure
     that it is set to dirty.
     """
+
     class MutableTester(XBlock):
         """Test class with mutable fields."""
+
         list_field = List(default=[])
 
-    mutable_test = MutableTester(TestRuntime(services={'field-data': DictFieldData({})}), scope_ids=Mock(spec=ScopeIds))
+    mutable_test = MutableTester(
+        TestRuntime(services={'field-data': DictFieldData({})}),
+        scope_ids=Mock(spec=ScopeIds),
+    )
 
     # Test get/set with a default value.
     assert len(mutable_test._dirty_fields) == 0
@@ -717,12 +754,19 @@ def test_change_mutable_default():
 
     class MutableTester(XBlock):
         """Test class with mutable fields."""
+
         list_field = List()
 
     field_data_a = DictFieldData({})
-    mutable_test_a = MutableTester(TestRuntime(services={'field-data': field_data_a}), scope_ids=Mock(spec=ScopeIds))
+    mutable_test_a = MutableTester(
+        TestRuntime(services={'field-data': field_data_a}),
+        scope_ids=Mock(spec=ScopeIds),
+    )
     field_data_b = DictFieldData({})
-    mutable_test_b = MutableTester(TestRuntime(services={'field-data': field_data_b}), scope_ids=Mock(spec=ScopeIds))
+    mutable_test_b = MutableTester(
+        TestRuntime(services={'field-data': field_data_b}),
+        scope_ids=Mock(spec=ScopeIds),
+    )
 
     # Saving without changing the default value shouldn't write to field_data
     mutable_test_a.list_field  # pylint: disable=W0104
@@ -763,6 +807,7 @@ def test_services_decorators():
     @XBlock.wants("w")
     class ServiceUsingBlock(XBlock):
         """XBlock using some services."""
+
         pass
 
     service_using_block = ServiceUsingBlock(None, scope_ids=None)
@@ -775,12 +820,14 @@ def test_services_decorators_with_inheritance():
     @XBlock.wants("w1")
     class ServiceUsingBlock(XBlock):
         """XBlock using some services."""
+
         pass
 
     @XBlock.needs("n2")
     @XBlock.wants("w2")
     class SubServiceUsingBlock(ServiceUsingBlock):
         """Does this class properly inherit services from ServiceUsingBlock?"""
+
         pass
 
     sub_service_using_block = SubServiceUsingBlock(None, scope_ids=None)
@@ -796,6 +843,7 @@ def test_cached_parent():
         """
         Dummy empty class
         """
+
         pass
 
     runtime = TestRuntime(services={'field-data': DictFieldData({})})
@@ -846,7 +894,7 @@ def test_json_handler_invalid_json():
     test_request = Mock(method="POST", body="{")
 
     @XBlock.json_handler
-    def test_func(self, request, suffix):   # pylint: disable=unused-argument
+    def test_func(self, request, suffix):  # pylint: disable=unused-argument
         return {}
 
     response = test_func(Mock(), test_request, "dummy_suffix")
@@ -860,7 +908,7 @@ def test_json_handler_get():
     test_request = Mock(method="GET")
 
     @XBlock.json_handler
-    def test_func(self, request, suffix):   # pylint: disable=unused-argument
+    def test_func(self, request, suffix):  # pylint: disable=unused-argument
         return {}
 
     response = test_func(Mock(), test_request, "dummy_suffix")
@@ -874,7 +922,7 @@ def test_json_handler_empty_request():
     test_request = Mock(method="POST", body="")
 
     @XBlock.json_handler
-    def test_func(self, request, suffix):   # pylint: disable=unused-argument
+    def test_func(self, request, suffix):  # pylint: disable=unused-argument
         return {}
 
     response = test_func(Mock(), test_request, "dummy_suffix")
@@ -890,10 +938,12 @@ def test_json_handler_error():
     test_request = Mock(method="POST", body="{}")
 
     @XBlock.json_handler
-    def test_func(self, request, suffix):   # pylint: disable=unused-argument
+    def test_func(self, request, suffix):  # pylint: disable=unused-argument
         raise JsonHandlerError(test_status_code, test_message)
 
-    response = test_func(Mock(), test_request, "dummy_suffix")  # pylint: disable=assignment-from-no-return
+    response = test_func(
+        Mock(), test_request, "dummy_suffix"
+    )  # pylint: disable=assignment-from-no-return
     assert response.status_code == test_status_code
     assert json.loads(response.body.decode('utf-8')) == {"error": test_message}
     assert response.content_type == "application/json"
@@ -930,10 +980,12 @@ class OpenLocalResourceTest(unittest.TestCase):
 
     class LoadableXBlock(XBlock):
         """Just something to load resources from."""
+
         pass
 
     class UnloadableXBlock(XBlock):
         """Just something to load resources from."""
+
         resources_dir = None
 
     def stub_resource_stream(self, module, name):
@@ -945,7 +997,7 @@ class OpenLocalResourceTest(unittest.TestCase):
         "public/hey.js",
         "public/sub/hey.js",
         "public/js/vendor/jNotify.jQuery.min.js",
-        "public/something.foo",         # Unknown file extension is fine
+        "public/something.foo",  # Unknown file extension is fine
         "public/a/long/PATH/no-problem=here$123.ext",
         "public/\N{SNOWMAN}.js",
     )
@@ -959,7 +1011,7 @@ class OpenLocalResourceTest(unittest.TestCase):
         "public/hey.js".encode('utf-8'),
         "public/sub/hey.js".encode('utf-8'),
         "public/js/vendor/jNotify.jQuery.min.js".encode('utf-8'),
-        "public/something.foo".encode('utf-8'),         # Unknown file extension is fine
+        "public/something.foo".encode('utf-8'),  # Unknown file extension is fine
         "public/a/long/PATH/no-problem=here$123.ext".encode('utf-8'),
         "public/\N{SNOWMAN}.js".encode('utf-8'),
     )
@@ -1004,7 +1056,7 @@ class OpenLocalResourceTest(unittest.TestCase):
         "public/hey.js",
         "public/sub/hey.js",
         "public/js/vendor/jNotify.jQuery.min.js",
-        "public/something.foo",         # Unknown file extension is fine
+        "public/something.foo",  # Unknown file extension is fine
         "public/a/long/PATH/no-problem=here$123.ext",
         "public/\N{SNOWMAN}.js",
         "public/foo.js",
@@ -1031,6 +1083,7 @@ class TestXBlockDeprecation(WarningTestMixin, unittest.TestCase):
 
     class TestBlock(XBlock):
         """An empty XBlock for testing"""
+
         pass
 
     def test_field_data_paramater(self):
@@ -1056,6 +1109,7 @@ class TestIndexResults(unittest.TestCase):
         """
         Class to test default Xblock provides a dictionary
         """
+
         pass
 
     class TestIndexedXBlock(XBlock):
@@ -1079,7 +1133,9 @@ class TestIndexResults(unittest.TestCase):
 
     def test_override_index_view(self):
         test_runtime = TestRuntime(services={'field-data': DictFieldData({})})
-        test_xblock = self.TestIndexedXBlock(test_runtime, scope_ids=Mock(spec=ScopeIds))
+        test_xblock = self.TestIndexedXBlock(
+            test_runtime, scope_ids=Mock(spec=ScopeIds)
+        )
 
         index_info = test_xblock.index_dictionary()
         self.assertTrue(index_info)

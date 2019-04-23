@@ -22,6 +22,7 @@ class TestAside(XBlockAside):
     """
     Test xblock aside class
     """
+
     __test__ = False
     FRAG_CONTENT = "<p>Aside rendered</p>"
 
@@ -48,6 +49,7 @@ class TestInheritedAside(TestAside):
     """
     XBlock Aside that inherits an aside view function from its parent.
     """
+
     FRAG_CONTENT = "<p>Inherited aside rendered</p>"
 
 
@@ -55,6 +57,7 @@ class AsideRuntimeSetup(TestCase):
     """
     A base class to setup the runtime
     """
+
     def setUp(self):
         key_store = DictKeyValueStore()
         field_data = KvsFieldData(key_store)
@@ -65,12 +68,15 @@ class TestAsides(AsideRuntimeSetup):
     """
     Tests of XBlockAsides.
     """
+
     def setUp(self):
         super(TestAsides, self).setUp()
         block_type = 'test_aside'
         def_id = self.runtime.id_generator.create_definition(block_type)
         usage_id = self.runtime.id_generator.create_usage(def_id)
-        self.tester = TestXBlock(self.runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id))
+        self.tester = TestXBlock(
+            self.runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id)
+        )
 
     @XBlockAside.register_temp_plugin(TestAside)
     def test_render_aside(self):
@@ -113,20 +119,25 @@ class TestAsides(AsideRuntimeSetup):
         """
         self.assertTrue(TestAside.should_apply_to_block(self.tester))
         test_aside_instances = [
-            inst for inst in self.runtime.get_asides(self.tester) if isinstance(inst, TestAside)
+            inst
+            for inst in self.runtime.get_asides(self.tester)
+            if isinstance(inst, TestAside)
         ]
         self.assertEqual(len(test_aside_instances), 1)
 
         self.tester.content = 'should not apply'
         self.assertFalse(TestAside.should_apply_to_block(self.tester))
         test_aside_instances = [
-            instance for instance in self.runtime.get_asides(self.tester) if isinstance(instance, TestAside)
+            instance
+            for instance in self.runtime.get_asides(self.tester)
+            if isinstance(instance, TestAside)
         ]
         self.assertEqual(len(test_aside_instances), 0)
 
 
 class ParsingTest(AsideRuntimeSetup, XmlTestMixin):
     """Tests of XML parsing."""
+
     def create_block(self):
         """
         Create a block with an aside.
@@ -136,18 +147,22 @@ class ParsingTest(AsideRuntimeSetup, XmlTestMixin):
         usage_id = self.runtime.id_generator.create_usage(def_id)
         block = self.runtime.get_block(usage_id)
         block_type = 'test_aside'
-        _, aside_id = self.runtime.id_generator.create_aside(def_id, usage_id, 'test_aside')
+        _, aside_id = self.runtime.id_generator.create_aside(
+            def_id, usage_id, 'test_aside'
+        )
         aside = self.runtime.get_aside(aside_id)
         return block, aside
 
     @XBlockAside.register_temp_plugin(TestAside, 'test_aside')
     @XBlock.register_temp_plugin(Leaf)
     def test_parsing(self):
-        block = self.parse_xml_to_block("""
+        block = self.parse_xml_to_block(
+            """
             <leaf data2='parsed'>
                 <test_aside xblock-family='xblock_asides.v1' data2='aside parsed'/>
             </leaf>
-        """)
+        """
+        )
 
         aside = self.runtime.get_aside_of_type(block, 'test_aside')
         self.assertEqual(aside.content, "default_value")
@@ -156,11 +171,13 @@ class ParsingTest(AsideRuntimeSetup, XmlTestMixin):
     @XBlockAside.register_temp_plugin(TestAside, 'test_aside')
     @XBlock.register_temp_plugin(Leaf)
     def test_parsing_content(self):
-        block = self.parse_xml_to_block("""
+        block = self.parse_xml_to_block(
+            """
             <leaf data2='parsed'>
                 <test_aside xblock-family='xblock_asides.v1'>my text!</test_aside>
             </leaf>
-        """)
+        """
+        )
 
         aside = self.runtime.get_aside_of_type(block, 'test_aside')
         self.assertEqual(aside.content, "my text!")
@@ -181,7 +198,9 @@ class ParsingTest(AsideRuntimeSetup, XmlTestMixin):
         """
         restored = self.parse_xml_to_block(self.export_xml_for_block(block))
         self._assert_xthing_equal(block, restored)
-        for first, second in six.moves.zip(self.runtime.get_asides(block), self.runtime.get_asides(restored)):
+        for first, second in six.moves.zip(
+            self.runtime.get_asides(block), self.runtime.get_asides(restored)
+        ):
             self._assert_xthing_equal(first, second)
 
     @XBlockAside.register_temp_plugin(TestAside, 'test_aside')

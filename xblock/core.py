@@ -50,6 +50,7 @@ class XBlockMixin(ScopedStorageMixin):
     created by a particular runtime.
 
     """
+
     pass
 
 
@@ -101,23 +102,37 @@ class SharedBlockBase(Plugin):
 
         # If no resources_dir is set, then this XBlock cannot serve local resources.
         if cls.resources_dir is None:
-            raise DisallowedFileError("This XBlock is not configured to serve local resources")
+            raise DisallowedFileError(
+                "This XBlock is not configured to serve local resources"
+            )
 
         # Make sure the path starts with whatever public_dir is set to.
         if not uri.startswith(cls.public_dir + '/'):
-            raise DisallowedFileError("Only files from %r/ are allowed: %r" % (cls.public_dir, uri))
+            raise DisallowedFileError(
+                "Only files from %r/ are allowed: %r" % (cls.public_dir, uri)
+            )
 
         # Disalow paths that have a '/.' component, as `/./` is a no-op and `/../`
         # can be used to recurse back past the entry point of this XBlock.
         if "/." in uri:
             raise DisallowedFileError("Only safe file names are allowed: %r" % uri)
 
-        return pkg_resources.resource_stream(cls.__module__, os.path.join(cls.resources_dir, uri))
+        return pkg_resources.resource_stream(
+            cls.__module__, os.path.join(cls.resources_dir, uri)
+        )
 
 
 # -- Base Block
-class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeServicesMixin, HandlersMixin,
-             IndexInfoMixin, ViewsMixin, SharedBlockBase):
+class XBlock(
+    XmlSerializationMixin,
+    HierarchyMixin,
+    ScopedStorageMixin,
+    RuntimeServicesMixin,
+    HandlersMixin,
+    IndexInfoMixin,
+    ViewsMixin,
+    SharedBlockBase,
+):
     """Base class for XBlocks.
 
     Derive from this class to create a new kind of XBlock.  There are no
@@ -126,6 +141,7 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
     Don't provide the ``__init__`` method when deriving from this class.
 
     """
+
     entry_point = 'xblock.v1'
 
     name = String(help="Short name for the block", scope=Scope.settings)
@@ -146,11 +162,15 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
     @staticmethod
     def tag(tags):
         """Returns a function that adds the words in `tags` as class tags to this class."""
+
         def dec(cls):
             """Add the words in `tags` as class tags to this class."""
             # Add in this class's tags
-            cls._class_tags.update(tags.replace(",", " ").split())  # pylint: disable=protected-access
+            cls._class_tags.update(
+                tags.replace(",", " ").split()
+            )  # pylint: disable=protected-access
             return cls
+
         return dec
 
     @classmethod
@@ -195,7 +215,9 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
             raise TypeError('scope_ids are required')
 
         # Provide backwards compatibility for external access through _field_data
-        super(XBlock, self).__init__(runtime=runtime, scope_ids=scope_ids, field_data=field_data, *args, **kwargs)
+        super(XBlock, self).__init__(
+            runtime=runtime, scope_ids=scope_ids, field_data=field_data, *args, **kwargs
+        )
 
     def render(self, view, context=None):
         """Render `view` with this block's runtime and the supplied `context`"""
@@ -228,7 +250,13 @@ class XBlock(XmlSerializationMixin, HierarchyMixin, ScopedStorageMixin, RuntimeS
         self.add_children_to_node(node)
 
 
-class XBlockAside(XmlSerializationMixin, ScopedStorageMixin, RuntimeServicesMixin, HandlersMixin, SharedBlockBase):
+class XBlockAside(
+    XmlSerializationMixin,
+    ScopedStorageMixin,
+    RuntimeServicesMixin,
+    HandlersMixin,
+    SharedBlockBase,
+):
     """
     This mixin allows Xblock-like class to declare that it provides aside functionality.
     """
@@ -254,6 +282,7 @@ class XBlockAside(XmlSerializationMixin, ScopedStorageMixin, RuntimeServicesMixi
 
             func._aside_for.append(view_name)  # pylint: disable=protected-access
             return func
+
         return _decorator
 
     @classmethod
@@ -273,7 +302,9 @@ class XBlockAside(XmlSerializationMixin, ScopedStorageMixin, RuntimeServicesMixi
         # The method declares what views it decorates. We rely on `dir`
         # to handle subclasses and overrides.
         combined_asides = defaultdict(None)
-        for _view_name, view_func in inspect.getmembers(cls, lambda attr: hasattr(attr, '_aside_for')):
+        for _view_name, view_func in inspect.getmembers(
+            cls, lambda attr: hasattr(attr, '_aside_for')
+        ):
             aside_for = getattr(view_func, '_aside_for', [])
             for view in aside_for:
                 combined_asides[view] = view_func.__name__
@@ -292,8 +323,12 @@ class XBlockAside(XmlSerializationMixin, ScopedStorageMixin, RuntimeServicesMixi
         Returns:
             either the function or None
         """
-        if view_name in self._combined_asides:  # pylint: disable=unsupported-membership-test
-            return getattr(self, self._combined_asides[view_name])  # pylint: disable=unsubscriptable-object
+        if (
+            view_name in self._combined_asides
+        ):  # pylint: disable=unsupported-membership-test
+            return getattr(
+                self, self._combined_asides[view_name]
+            )  # pylint: disable=unsubscriptable-object
         else:
             return None
 
@@ -311,8 +346,13 @@ class KeyValueMultiSaveError(xblock.exceptions.KeyValueMultiSaveError):
     """
     Backwards compatibility class wrapper around :class:`.KeyValueMultiSaveError`.
     """
+
     def __init__(self, *args, **kwargs):
-        warnings.warn("Please use xblock.exceptions.KeyValueMultiSaveError", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Please use xblock.exceptions.KeyValueMultiSaveError",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super(KeyValueMultiSaveError, self).__init__(*args, **kwargs)
 
 
@@ -320,6 +360,11 @@ class XBlockSaveError(xblock.exceptions.XBlockSaveError):
     """
     Backwards compatibility class wrapper around :class:`.XBlockSaveError`.
     """
+
     def __init__(self, *args, **kwargs):
-        warnings.warn("Please use xblock.exceptions.XBlockSaveError", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Please use xblock.exceptions.XBlockSaveError",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         super(XBlockSaveError, self).__init__(*args, **kwargs)

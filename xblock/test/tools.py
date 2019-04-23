@@ -55,11 +55,14 @@ def blocks_are_equivalent(block1, block2):
 
 def _unabc(cls, msg="{} isn't implemented"):
     """Helper method to implement `unabc`"""
+
     def make_dummy_method(ab_name):
         """A function to make the dummy method, to close over ab_name."""
+
         def dummy_method(self, *args, **kwargs):  # pylint: disable=unused-argument
             """The method provided for all missing abstract methods."""
             raise NotImplementedError(msg.format(ab_name))
+
         return dummy_method
 
     for ab_name in cls.__abstractmethods__:
@@ -96,6 +99,7 @@ class WarningTestMixin(object):
     """
     Add the ability to assert on warnings raised by a chunk of code.
     """
+
     @contextmanager
     def assertWarns(self, warning_class):
         """
@@ -106,7 +110,9 @@ class WarningTestMixin(object):
             warnings.simplefilter("always")
             yield
             self.assertGreaterEqual(len(warns), 1)
-            self.assertTrue(any(issubclass(warning.category, warning_class) for warning in warns))
+            self.assertTrue(
+                any(issubclass(warning.category, warning_class) for warning in warns)
+            )
 
 
 @unabc("{} shouldn't be used in tests")
@@ -114,6 +120,7 @@ class TestRuntime(Runtime):
     """
     An empty runtime to be used in tests
     """
+
     __test__ = False
 
     # unabc doesn't squash pylint errors

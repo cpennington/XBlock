@@ -15,16 +15,13 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'toyruntime.db'
-    }
+    'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': 'toyruntime.db'}
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake'
+        'LOCATION': 'unique-snowflake',
     }
 }
 
@@ -51,7 +48,9 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-PROJECT_ROOT = path(__file__).abspath().dirname().dirname().dirname()  # pylint: disable=invalid-name, no-value-for-parameter
+PROJECT_ROOT = (
+    path(__file__).abspath().dirname().dirname().dirname()
+)  # pylint: disable=invalid-name, no-value-for-parameter
 LOCALE_PATHS = [text_type(PROJECT_ROOT + '/xblock/test/locale')]
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
@@ -107,10 +106,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -123,16 +120,12 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
+    'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
     'handlers': {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {
@@ -141,10 +134,8 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'django': {
-            'level': 'INFO',
-        }
-    }
+        'django': {'level': 'INFO'},
+    },
 }
 
 WORKBENCH = {

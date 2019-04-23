@@ -15,6 +15,7 @@ class SingleUserService(UserService):
     """
     This is a dummy user service for testing that always returns a single user.
     """
+
     def __init__(self, user):
         super(SingleUserService, self).__init__()
         self.user = user

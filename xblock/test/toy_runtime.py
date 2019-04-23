@@ -12,9 +12,7 @@ except ImportError:
 import six
 
 from xblock.fields import Scope
-from xblock.runtime import (
-    KvsFieldData, KeyValueStore, Runtime, MemoryIdManager
-)
+from xblock.runtime import KvsFieldData, KeyValueStore, Runtime, MemoryIdManager
 from xblock.test.tools import unabc
 
 log = logging.getLogger(__name__)
@@ -28,6 +26,7 @@ class ToyRuntimeKeyValueStore(KeyValueStore):
     read the dict when it is rendered in the browser.
 
     """
+
     def __init__(self, db_dict):
         super(ToyRuntimeKeyValueStore, self).__init__()
         self.db_dict = db_dict
@@ -103,14 +102,19 @@ class ToyRuntime(Runtime):
     `self.runtime`.
 
     """
+
     # pylint: disable=abstract-method
 
     def __init__(self, user_id=None):
-        super(ToyRuntime, self).__init__(ID_MANAGER, services={'field-data': KvsFieldData(TOYRUNTIME_KVS)})
+        super(ToyRuntime, self).__init__(
+            ID_MANAGER, services={'field-data': KvsFieldData(TOYRUNTIME_KVS)}
+        )
         self.id_generator = ID_MANAGER
         self.user_id = user_id
 
-    def render_template(self, template_name, **kwargs):  # pylint: disable=unused-argument
+    def render_template(
+        self, template_name, **kwargs
+    ):  # pylint: disable=unused-argument
         """Mock for rendering templates"""
         return template_name
 
@@ -145,7 +149,7 @@ class ToyRuntime(Runtime):
             event_type,
             block.scope_ids.block_type,
             block.scope_ids.usage_id,
-            event_data
+            event_data,
         )
 
 

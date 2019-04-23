@@ -41,17 +41,30 @@ class TestMixin(object):
     """
     Set up namespaces for each scope to use.
     """
+
     mixin_content = String(scope=Scope.content, default='mixin_c')
     mixin_settings = String(scope=Scope.settings, default='mixin_s')
     mixin_user_state = String(scope=Scope.user_state, default='mixin_ss')
     mixin_preferences = String(scope=Scope.preferences, default='mixin_sp')
     mixin_user_info = String(scope=Scope.user_info, default='mixin_si')
-    mixin_by_type = String(scope=Scope(UserScope.NONE, BlockScope.TYPE), default='mixin_bt')
-    mixin_for_all = String(scope=Scope(UserScope.NONE, BlockScope.ALL), default='mixin_fa')
-    mixin_user_def = String(scope=Scope(UserScope.ONE, BlockScope.DEFINITION), default='mixin_sd')
-    mixin_agg_global = String(scope=Scope(UserScope.ALL, BlockScope.ALL), default='mixin_ag')
-    mixin_agg_type = String(scope=Scope(UserScope.ALL, BlockScope.TYPE), default='mixin_at')
-    mixin_agg_def = String(scope=Scope(UserScope.ALL, BlockScope.DEFINITION), default='mixin_ad')
+    mixin_by_type = String(
+        scope=Scope(UserScope.NONE, BlockScope.TYPE), default='mixin_bt'
+    )
+    mixin_for_all = String(
+        scope=Scope(UserScope.NONE, BlockScope.ALL), default='mixin_fa'
+    )
+    mixin_user_def = String(
+        scope=Scope(UserScope.ONE, BlockScope.DEFINITION), default='mixin_sd'
+    )
+    mixin_agg_global = String(
+        scope=Scope(UserScope.ALL, BlockScope.ALL), default='mixin_ag'
+    )
+    mixin_agg_type = String(
+        scope=Scope(UserScope.ALL, BlockScope.TYPE), default='mixin_at'
+    )
+    mixin_agg_def = String(
+        scope=Scope(UserScope.ALL, BlockScope.DEFINITION), default='mixin_ad'
+    )
     mixin_agg_usage = String(scope=Scope.user_state_summary, default='mixin_au')
 
 
@@ -59,6 +72,7 @@ class TestXBlockNoFallback(XBlock):
     """
     Set up a class that contains ModelTypes as fields, but no views or handlers
     """
+
     __test__ = False
     content = String(scope=Scope.content, default='c')
     settings = String(scope=Scope.settings, default='s')
@@ -82,6 +96,7 @@ class TestXBlock(TestXBlockNoFallback):
     """
     Test xblock class with fallback methods
     """
+
     @XBlock.handler
     def existing_handler(self, request, suffix=''):  # pylint: disable=unused-argument
         """ an existing handler to be used """
@@ -89,7 +104,9 @@ class TestXBlock(TestXBlockNoFallback):
         return "I am the existing test handler"
 
     @XBlock.handler
-    def fallback_handler(self, handler_name, request, suffix=''):  # pylint: disable=unused-argument
+    def fallback_handler(
+        self, handler_name, request, suffix=''
+    ):  # pylint: disable=unused-argument
         """ test fallback handler """
         self.user_state = request
         if handler_name == 'test_fallback_handler':
@@ -117,8 +134,12 @@ def test_db_model_keys():
     # and that the keys have been constructed correctly
     key_store = DictKeyValueStore()
     field_data = KvsFieldData(key_store)
-    runtime = TestRuntime(Mock(), mixins=[TestMixin], services={'field-data': field_data})
-    tester = runtime.construct_xblock_from_class(TestXBlock, ScopeIds('s0', 'TestXBlock', 'd0', 'u0'))
+    runtime = TestRuntime(
+        Mock(), mixins=[TestMixin], services={'field-data': field_data}
+    )
+    tester = runtime.construct_xblock_from_class(
+        TestXBlock, ScopeIds('s0', 'TestXBlock', 'd0', 'u0')
+    )
 
     assert not field_data.has(tester, 'not a field')
 
@@ -145,38 +166,112 @@ def test_db_model_keys():
     assert get_key_value(Scope.content, None, 'd0', 'content') == 'new content'
     assert get_key_value(Scope.settings, None, 'u0', 'settings') == 'new settings'
     assert get_key_value(Scope.user_state, 's0', 'u0', 'user_state') == 'new user_state'
-    assert get_key_value(Scope.preferences, 's0', 'TestXBlock', 'preferences') == 'new preferences'
+    assert (
+        get_key_value(Scope.preferences, 's0', 'TestXBlock', 'preferences')
+        == 'new preferences'
+    )
     assert get_key_value(Scope.user_info, 's0', None, 'user_info') == 'new user_info'
-    assert get_key_value(Scope(UserScope.NONE, BlockScope.TYPE), None, 'TestXBlock', 'by_type') == 'new by_type'
-    assert get_key_value(Scope(UserScope.NONE, BlockScope.ALL), None, None, 'for_all') == 'new for_all'
-    assert get_key_value(Scope(UserScope.ONE, BlockScope.DEFINITION), 's0', 'd0', 'user_def') == 'new user_def'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.ALL), None, None, 'agg_global') == 'new agg_global'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.TYPE), None, 'TestXBlock', 'agg_type') == 'new agg_type'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.DEFINITION), None, 'd0', 'agg_def') == 'new agg_def'
-    assert get_key_value(Scope.user_state_summary, None, 'u0', 'agg_usage') == 'new agg_usage'
-    assert get_key_value(Scope.content, None, 'd0', 'mixin_content') == 'new mixin_content'
-    assert get_key_value(Scope.settings, None, 'u0', 'mixin_settings') == 'new mixin_settings'
-    assert get_key_value(Scope.user_state, 's0', 'u0', 'mixin_user_state') == 'new mixin_user_state'
-    assert get_key_value(Scope.preferences, 's0', 'TestXBlock', 'mixin_preferences') == 'new mixin_preferences'
-    assert get_key_value(Scope.user_info, 's0', None, 'mixin_user_info') == 'new mixin_user_info'
-    assert get_key_value(Scope(UserScope.NONE, BlockScope.TYPE), None, 'TestXBlock', 'mixin_by_type') == \
-        'new mixin_by_type'
-    assert get_key_value(Scope(UserScope.NONE, BlockScope.ALL), None, None, 'mixin_for_all') == \
-        'new mixin_for_all'
-    assert get_key_value(Scope(UserScope.ONE, BlockScope.DEFINITION), 's0', 'd0', 'mixin_user_def') == \
-        'new mixin_user_def'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.ALL), None, None, 'mixin_agg_global') == \
-        'new mixin_agg_global'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.TYPE), None, 'TestXBlock', 'mixin_agg_type') == \
-        'new mixin_agg_type'
-    assert get_key_value(Scope(UserScope.ALL, BlockScope.DEFINITION), None, 'd0', 'mixin_agg_def') == \
-        'new mixin_agg_def'
-    assert get_key_value(Scope.user_state_summary, None, 'u0', 'mixin_agg_usage') == 'new mixin_agg_usage'
+    assert (
+        get_key_value(
+            Scope(UserScope.NONE, BlockScope.TYPE), None, 'TestXBlock', 'by_type'
+        )
+        == 'new by_type'
+    )
+    assert (
+        get_key_value(Scope(UserScope.NONE, BlockScope.ALL), None, None, 'for_all')
+        == 'new for_all'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ONE, BlockScope.DEFINITION), 's0', 'd0', 'user_def'
+        )
+        == 'new user_def'
+    )
+    assert (
+        get_key_value(Scope(UserScope.ALL, BlockScope.ALL), None, None, 'agg_global')
+        == 'new agg_global'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ALL, BlockScope.TYPE), None, 'TestXBlock', 'agg_type'
+        )
+        == 'new agg_type'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ALL, BlockScope.DEFINITION), None, 'd0', 'agg_def'
+        )
+        == 'new agg_def'
+    )
+    assert (
+        get_key_value(Scope.user_state_summary, None, 'u0', 'agg_usage')
+        == 'new agg_usage'
+    )
+    assert (
+        get_key_value(Scope.content, None, 'd0', 'mixin_content') == 'new mixin_content'
+    )
+    assert (
+        get_key_value(Scope.settings, None, 'u0', 'mixin_settings')
+        == 'new mixin_settings'
+    )
+    assert (
+        get_key_value(Scope.user_state, 's0', 'u0', 'mixin_user_state')
+        == 'new mixin_user_state'
+    )
+    assert (
+        get_key_value(Scope.preferences, 's0', 'TestXBlock', 'mixin_preferences')
+        == 'new mixin_preferences'
+    )
+    assert (
+        get_key_value(Scope.user_info, 's0', None, 'mixin_user_info')
+        == 'new mixin_user_info'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.NONE, BlockScope.TYPE), None, 'TestXBlock', 'mixin_by_type'
+        )
+        == 'new mixin_by_type'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.NONE, BlockScope.ALL), None, None, 'mixin_for_all'
+        )
+        == 'new mixin_for_all'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ONE, BlockScope.DEFINITION), 's0', 'd0', 'mixin_user_def'
+        )
+        == 'new mixin_user_def'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ALL, BlockScope.ALL), None, None, 'mixin_agg_global'
+        )
+        == 'new mixin_agg_global'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ALL, BlockScope.TYPE), None, 'TestXBlock', 'mixin_agg_type'
+        )
+        == 'new mixin_agg_type'
+    )
+    assert (
+        get_key_value(
+            Scope(UserScope.ALL, BlockScope.DEFINITION), None, 'd0', 'mixin_agg_def'
+        )
+        == 'new mixin_agg_def'
+    )
+    assert (
+        get_key_value(Scope.user_state_summary, None, 'u0', 'mixin_agg_usage')
+        == 'new mixin_agg_usage'
+    )
 
 
 @unabc("{} shouldn't be used in tests")
 class MockRuntimeForQuerying(TestRuntime):
     """Mock out a runtime for querypath_parsing test"""
+
     # unabc doesn't squash pylint errors
     # pylint: disable=abstract-method
     def __init__(self, **kwargs):
@@ -207,33 +302,45 @@ def test_runtime_handle():
     runtime = MockRuntimeForQuerying()
     # string we want to update using the handler
     update_string = "user state update"
-    assert runtime.handle(basic_tester, 'existing_handler', update_string) == \
-        'I am the existing test handler'
+    assert (
+        runtime.handle(basic_tester, 'existing_handler', update_string)
+        == 'I am the existing test handler'
+    )
     assert basic_tester.user_state == update_string
 
     # when the handler needs to use the fallback as given name can't be found
     new_update_string = "new update"
-    assert runtime.handle(basic_tester, 'test_fallback_handler', new_update_string) == \
-        'I have been handled'
+    assert (
+        runtime.handle(basic_tester, 'test_fallback_handler', new_update_string)
+        == 'I have been handled'
+    )
     assert basic_tester.user_state == new_update_string
 
     # request to use a handler which doesn't have XBlock.handler decoration
     # should use the fallback
     new_update_string = "new update"
-    assert runtime.handle(basic_tester, 'handler_without_correct_decoration', new_update_string) == \
-        'gone to fallback'
+    assert (
+        runtime.handle(
+            basic_tester, 'handler_without_correct_decoration', new_update_string
+        )
+        == 'gone to fallback'
+    )
     assert basic_tester.user_state == new_update_string
 
     # handler can't be found & no fallback handler supplied, should throw an exception
     no_fallback_tester = TestXBlockNoFallback(runtime, scope_ids=Mock(spec=ScopeIds))
     ultimate_string = "ultimate update"
     with pytest.raises(NoSuchHandlerError):
-        runtime.handle(no_fallback_tester, 'test_nonexistant_fallback_handler', ultimate_string)
+        runtime.handle(
+            no_fallback_tester, 'test_nonexistant_fallback_handler', ultimate_string
+        )
 
     # request to use a handler which doesn't have XBlock.handler decoration
     # and no fallback should raise NoSuchHandlerError
     with pytest.raises(NoSuchHandlerError):
-        runtime.handle(no_fallback_tester, 'handler_without_correct_decoration', 'handled')
+        runtime.handle(
+            no_fallback_tester, 'handler_without_correct_decoration', 'handled'
+        )
 
 
 def test_runtime_render():
@@ -243,7 +350,9 @@ def test_runtime_render():
     block_type = 'test'
     def_id = runtime.id_generator.create_definition(block_type)
     usage_id = runtime.id_generator.create_usage(def_id)
-    tester = TestXBlock(runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id))
+    tester = TestXBlock(
+        runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id)
+    )
     # string we want to update using the handler
     update_string = "user state update"
 
@@ -275,6 +384,7 @@ class SerialDefaultKVS(DictKeyValueStore):
     """
     A kvs which gives each call to default the next int (nonsensical but for testing default fn)
     """
+
     def __init__(self, *args, **kwargs):
         super(SerialDefaultKVS, self).__init__(*args, **kwargs)
         self.default_counter = 0
@@ -288,6 +398,7 @@ class TestIntegerXblock(XBlock):
     """
     XBlock with an integer field, for testing.
     """
+
     __test__ = False
     counter = Integer(scope=Scope.content)
 
@@ -318,6 +429,7 @@ def test_default_fn():
 
 class TestSimpleMixin(object):
     """Toy class for mixin testing"""
+
     field_x = List(scope=Scope.content)
     field_y = String(scope=Scope.user_state, default="default_value")
 
@@ -331,6 +443,7 @@ class TestSimpleMixin(object):
 
 class FieldTester(XBlock):
     """Test XBlock for field access testing"""
+
     field_a = Integer(scope=Scope.settings)
     field_b = Integer(scope=Scope.content, default=10)
     field_c = Integer(scope=Scope.user_state, default=42)
@@ -338,11 +451,10 @@ class FieldTester(XBlock):
 
 # Test that access to fields from mixins works as expected
 def test_mixin_field_access():
-    field_data = DictFieldData({
-        'field_a': 5,
-        'field_x': [1, 2, 3],
-    })
-    runtime = TestRuntime(Mock(), mixins=[TestSimpleMixin], services={'field-data': field_data})
+    field_data = DictFieldData({'field_a': 5, 'field_x': [1, 2, 3]})
+    runtime = TestRuntime(
+        Mock(), mixins=[TestSimpleMixin], services={'field-data': field_data}
+    )
 
     field_tester = runtime.construct_xblock_from_class(FieldTester, Mock())
 
@@ -374,6 +486,7 @@ class Dynamic(object):
     """
     Object for testing that sets attrs based on __init__ kwargs
     """
+
     def __init__(self, **kwargs):
         for name, value in six.iteritems(kwargs):
             setattr(self, name, value)
@@ -383,6 +496,7 @@ class TestObjectAggregator(object):
     """
     Test that the ObjectAggregator behaves correctly
     """
+
     # pylint: disable=attribute-defined-outside-init
     def setup_method(self):
         """
@@ -392,6 +506,7 @@ class TestObjectAggregator(object):
         self.first = Dynamic(first=1)
         self.second = Dynamic(second=2)
         self.agg = ObjectAggregator(self.first, self.second)
+
     # pylint: enable=attribute-defined-outside-init
 
     def test_get(self):
@@ -425,28 +540,34 @@ class TestObjectAggregator(object):
 
 class FirstMixin(XBlockMixin):
     """Test class for mixin ordering."""
+
     number = 1
     field = Integer(default=1)
 
 
 class SecondMixin(XBlockMixin):
     """Test class for mixin ordering."""
+
     number = 2
     field = Integer(default=2)
 
 
 class ThirdMixin(XBlockMixin):
     """Test class for mixin ordering."""
+
     field = Integer(default=3)
 
 
 class TestMixologist(object):
     """Test that the Mixologist class behaves correctly."""
+
     def setup_method(self):
         """
         Setup for each test method in this class.
         """
-        self.mixologist = Mixologist([FirstMixin, SecondMixin])  # pylint: disable=attribute-defined-outside-init
+        self.mixologist = Mixologist(
+            [FirstMixin, SecondMixin]
+        )  # pylint: disable=attribute-defined-outside-init
 
     # Test that the classes generated by the mixologist are cached
     # (and only generated once)
@@ -463,7 +584,9 @@ class TestMixologist(object):
         assert FieldTester is self.mixologist.mix(FieldTester).unmixed_class
 
     def test_mixin_fields(self):
-        assert FirstMixin.fields['field'] is FirstMixin.field  # pylint: disable=unsubscriptable-object
+        assert (
+            FirstMixin.fields['field'] is FirstMixin.field
+        )  # pylint: disable=unsubscriptable-object
 
     def test_mixed_fields(self):
         mixed = self.mixologist.mix(FieldTester)
@@ -488,7 +611,9 @@ class TestMixologist(object):
         assert FieldTester is pre_mixed.unmixed_class
         assert FieldTester is post_mixed.unmixed_class
 
-        assert len(pre_mixed.__bases__) == 4  # 1 for the original class + 3 mixin classes
+        assert (
+            len(pre_mixed.__bases__) == 4
+        )  # 1 for the original class + 3 mixin classes
         assert len(post_mixed.__bases__) == 4
 
 
@@ -498,6 +623,7 @@ class XBlockWithServices(XBlock):
     """
     Test XBlock class with service declarations.
     """
+
     def student_view(self, _context):
         """Try out some services."""
         # i18n is available, and works.
@@ -517,7 +643,9 @@ class XBlockWithServices(XBlock):
         when = datetime(2013, 2, 14, 22, 30, 17)
         assert_equals_unicode("2013-02-14", i18n.strftime(when, "%Y-%m-%d"))
         assert_equals_unicode("Feb 14, 2013", i18n.strftime(when, "SHORT_DATE"))
-        assert_equals_unicode("Thursday, February 14, 2013", i18n.strftime(when, "LONG_DATE"))
+        assert_equals_unicode(
+            "Thursday, February 14, 2013", i18n.strftime(when, "LONG_DATE")
+        )
         assert_equals_unicode("Feb 14, 2013 at 22:30", i18n.strftime(when, "DATE_TIME"))
         assert_equals_unicode("10:30:17 PM", i18n.strftime(when, "TIME"))
 
@@ -536,14 +664,15 @@ class XBlockWithServices(XBlock):
 
 
 def test_service():
-    runtime = TestRuntime(services={
-        'secret_service': 17,
-        'field-data': DictFieldData({}),
-    })
+    runtime = TestRuntime(
+        services={'secret_service': 17, 'field-data': DictFieldData({})}
+    )
     block_type = 'test'
     def_id = runtime.id_generator.create_definition(block_type)
     usage_id = runtime.id_generator.create_usage(def_id)
-    tester = XBlockWithServices(runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id))
+    tester = XBlockWithServices(
+        runtime, scope_ids=ScopeIds('user', block_type, def_id, usage_id)
+    )
 
     # Call the student_view to run its assertions.
     runtime.render(tester, 'student_view')
@@ -559,9 +688,7 @@ def test_ugettext_calls():
     assert isinstance(block.ugettext('test'), six.text_type)
 
     # NoSuchServiceError exception should raise if i18n is none/empty.
-    runtime = TestRuntime(services={
-        'i18n': None
-    })
+    runtime = TestRuntime(services={'i18n': None})
     block = XBlockWithServices(runtime, scope_ids=Mock(spec=[]))
     with pytest.raises(NoSuchServiceError):
         block.ugettext('test')
@@ -573,6 +700,7 @@ class SubXBlockWithServices(XBlockWithServices):
     """
     Test that subclasses can use services declared on the parent.
     """
+
     def student_view(self, context):
         """Try the services."""
         # First, call the super class, its assertions should still pass.
@@ -590,10 +718,10 @@ class SubXBlockWithServices(XBlockWithServices):
 
 
 def test_sub_service():
-    runtime = TestRuntime(id_reader=Mock(), services={
-        'secret_service': 17,
-        'field-data': DictFieldData({}),
-    })
+    runtime = TestRuntime(
+        id_reader=Mock(),
+        services={'secret_service': 17, 'field-data': DictFieldData({})},
+    )
     tester = SubXBlockWithServices(runtime, scope_ids=Mock(spec=ScopeIds))
 
     # Call the student_view to run its assertions.
@@ -604,6 +732,7 @@ class TestRuntimeGetBlock(TestCase):
     """
     Test the get_block default method on Runtime.
     """
+
     def setUp(self):
         patcher = patch.object(TestRuntime, 'construct_xblock')
         self.construct_block = patcher.start()
@@ -612,7 +741,9 @@ class TestRuntimeGetBlock(TestCase):
         self.id_reader = Mock(IdReader)
         self.user_id = Mock()
         self.field_data = Mock(FieldData)
-        self.runtime = TestRuntime(self.id_reader, services={'field-data': self.field_data})
+        self.runtime = TestRuntime(
+            self.id_reader, services={'field-data': self.field_data}
+        )
         self.runtime.user_id = self.user_id
 
         self.usage_id = 'usage_id'

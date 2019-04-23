@@ -16,11 +16,12 @@ class Fragment(web_fragments.fragment.Fragment):
 
     Deprecated.
     """
+
     def __init__(self, *args, **kwargs):
         warnings.warn(
             'xblock.fragment is deprecated. Please use web_fragments.fragment instead',
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
         super(Fragment, self).__init__(*args, **kwargs)
 

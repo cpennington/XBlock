@@ -19,11 +19,13 @@ PLUGIN_CACHE = {}
 
 class PluginMissingError(Exception):
     """Raised when trying to load a plugin from an entry_point that cannot be found."""
+
     pass
 
 
 class AmbiguousPluginError(Exception):
     """Raised when a class name produces more than one entry_point."""
+
     def __init__(self, all_entry_points):
         classes = (entpt.load() for entpt in all_entry_points)
         desc = ", ".join("{0.__module__}.{0.__name__}".format(cls) for cls in classes)
@@ -31,7 +33,9 @@ class AmbiguousPluginError(Exception):
         super(AmbiguousPluginError, self).__init__(msg)
 
 
-def default_select(identifier, all_entry_points):  # pylint: disable=inconsistent-return-statements
+def default_select(
+    identifier, all_entry_points
+):  # pylint: disable=inconsistent-return-statements
     """
     Raise an exception when we have ambiguous entry points.
     """
@@ -54,6 +58,7 @@ class Plugin(object):
         `entry_point`: The name of the entry point to load plugins from.
 
     """
+
     entry_point = None  # Should be overwritten by children classes
 
     @class_lazy
@@ -105,7 +110,9 @@ class Plugin(object):
             if select is None:
                 select = default_select
 
-            all_entry_points = list(pkg_resources.iter_entry_points(cls.entry_point, name=identifier))
+            all_entry_points = list(
+                pkg_resources.iter_entry_points(cls.entry_point, name=identifier)
+            )
             for extra_identifier, extra_entry_point in cls.extra_entry_points:
                 if identifier == extra_identifier:
                     all_entry_points.append(extra_entry_point)
@@ -146,7 +153,9 @@ class Plugin(object):
                 yield (class_.name, cls._load_class_entry_point(class_))
             except Exception:  # pylint: disable=broad-except
                 if fail_silently:
-                    log.warning('Unable to load %s %r', cls.__name__, class_.name, exc_info=True)
+                    log.warning(
+                        'Unable to load %s %r', cls.__name__, class_.name, exc_info=True
+                    )
                 else:
                     raise
 
@@ -166,15 +175,12 @@ class Plugin(object):
         if identifier is None:
             identifier = class_.__name__.lower()
 
-        entry_point = Mock(
-            dist=Mock(key=dist),
-            load=Mock(return_value=class_),
-        )
+        entry_point = Mock(dist=Mock(key=dist), load=Mock(return_value=class_))
         entry_point.name = identifier
 
-        def _decorator(func):                           # pylint: disable=C0111
+        def _decorator(func):  # pylint: disable=C0111
             @functools.wraps(func)
-            def _inner(*args, **kwargs):                # pylint: disable=C0111
+            def _inner(*args, **kwargs):  # pylint: disable=C0111
                 global PLUGIN_CACHE  # pylint: disable=global-statement
 
                 old = list(cls.extra_entry_points)
@@ -188,5 +194,7 @@ class Plugin(object):
                 finally:
                     cls.extra_entry_points = old
                     PLUGIN_CACHE = old_cache
+
             return _inner
+
         return _decorator

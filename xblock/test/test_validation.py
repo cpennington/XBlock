@@ -30,10 +30,16 @@ class ValidationMessageTest(unittest.TestCase):
         Test the `to_json` method.
         """
         expected = {"type": ValidationMessage.ERROR, "text": "Error message"}
-        self.assertEqual(expected, ValidationMessage(ValidationMessage.ERROR, "Error message").to_json())
+        self.assertEqual(
+            expected,
+            ValidationMessage(ValidationMessage.ERROR, "Error message").to_json(),
+        )
 
         expected = {"type": ValidationMessage.WARNING, "text": "Warning message"}
-        self.assertEqual(expected, ValidationMessage(ValidationMessage.WARNING, "Warning message").to_json())
+        self.assertEqual(
+            expected,
+            ValidationMessage(ValidationMessage.WARNING, "Warning message").to_json(),
+        )
 
 
 class ValidationTest(unittest.TestCase):
@@ -62,7 +68,9 @@ class ValidationTest(unittest.TestCase):
         validation_1.add(ValidationMessage(ValidationMessage.ERROR, "Error message"))
 
         validation_2 = Validation("id")
-        validation_2.add(ValidationMessage(ValidationMessage.WARNING, "Warning message"))
+        validation_2.add(
+            ValidationMessage(ValidationMessage.WARNING, "Warning message")
+        )
 
         validation_1.add_messages(validation_2)
         self.assertEqual(2, len(validation_1.messages))
@@ -87,11 +95,7 @@ class ValidationTest(unittest.TestCase):
         Test the ability to serialize a `Validation` instance.
         """
         validation = Validation("id")
-        expected = {
-            "xblock_id": "id",
-            "messages": [],
-            "empty": True
-        }
+        expected = {"xblock_id": "id", "messages": [], "empty": True}
         self.assertEqual(expected, validation.to_json())
 
         validation.add(ValidationMessage(ValidationMessage.ERROR, "Error message"))
@@ -101,8 +105,8 @@ class ValidationTest(unittest.TestCase):
             "xblock_id": "id",
             "messages": [
                 {"type": ValidationMessage.ERROR, "text": "Error message"},
-                {"type": ValidationMessage.WARNING, "text": "Warning message"}
+                {"type": ValidationMessage.WARNING, "text": "Warning message"},
             ],
-            "empty": False
+            "empty": False,
         }
         self.assertEqual(expected, validation.to_json())

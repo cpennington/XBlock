@@ -12,6 +12,7 @@ from unittest import TestCase
 # pylint: disable=wrong-import-position
 try:
     from django.test.client import RequestFactory  # pylint: disable=import-error
+
     HAS_DJANGO = True
 except ImportError:
     HAS_DJANGO = False
@@ -21,6 +22,7 @@ from webob import Response
 
 from xblock import django  # pylint: disable=unused-import
 from xblock.django.request import django_to_webob_request, webob_to_django_response
+
 # pylint: enable=wrong-import-position
 
 
@@ -29,6 +31,7 @@ class TestDjangoWebobRequest(TestCase):
     """
     Tests of the django_to_webob_request function
     """
+
     def setUp(self):
         self.req_factory = RequestFactory()
 
@@ -38,7 +41,9 @@ class TestDjangoWebobRequest(TestCase):
         dj_req = self.req_factory.post('dummy_url', data={'foo': 'bar'})
 
         # Read from POST before constructing the webob request
-        self.assertEqual(dj_req.POST.getlist('foo'), ['bar'])  # pylint: disable=no-member
+        self.assertEqual(
+            dj_req.POST.getlist('foo'), ['bar']
+        )  # pylint: disable=no-member
 
         webob_req = django_to_webob_request(dj_req)
         self.assertEqual(webob_req.POST.getall('foo'), ['bar'])
@@ -49,6 +54,7 @@ class TestDjangoWebobResponse(TestCase):
     """
     Tests of the webob_to_django_response function
     """
+
     def _as_django(self, *args, **kwargs):
         """
         Return a :class:`django.http.HttpResponse` created from a `webob.Response`
@@ -67,7 +73,10 @@ class TestDjangoWebobResponse(TestCase):
         self.assertEqual(self._as_django(body=b"foo", charset="utf-8").content, b"foo")
 
         encoded_snowman = "\N{SNOWMAN}".encode('utf-8')
-        self.assertEqual(self._as_django(body=encoded_snowman, charset="utf-8").content, encoded_snowman)
+        self.assertEqual(
+            self._as_django(body=encoded_snowman, charset="utf-8").content,
+            encoded_snowman,
+        )
 
     def test_headers(self):
         self.assertIn('X-Foo', self._as_django(headerlist=[('X-Foo', 'bar')]))
@@ -77,11 +86,11 @@ class TestDjangoWebobResponse(TestCase):
         # JSON content type (no charset should be returned)
         self.assertEqual(
             self._as_django(content_type='application/json')['Content-Type'],
-            'application/json'
+            'application/json',
         )
 
         # HTML content type (UTF-8 charset should be returned)
         self.assertEqual(
             self._as_django(content_type='text/html')['Content-Type'],
-            'text/html; charset=UTF-8'
+            'text/html; charset=UTF-8',
         )

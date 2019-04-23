@@ -165,9 +165,7 @@ class UniversalProperties(object):
 
             self.block.force_save_fields(['field'])
 
-            patched_set_many.assert_called_with(
-                self.block, {'field': self.get()}
-            )
+            patched_set_many.assert_called_with(self.block, {'field': self.get()})
 
     def test_set_after_get_doesnt_save(self):
         with patch.object(self.field_data, 'set_many') as patched_set_many:
@@ -248,6 +246,7 @@ class InitialValueProperties(object):
         self.block  # An initialized xblock with a field named `field`
         self.field_data  # The field_data used by self.block
     """
+
     def get_field_data(self):
         """Return a new :class:`~xblock.field_data.FieldData` for testing"""
         return DictFieldData({'field': copy.deepcopy(self.initial_value)})
@@ -280,6 +279,7 @@ class DefaultValueProperties(object):
         self.block  # An initialized xblock with a field named `field`
         self.field_data  # The field_data used by self.block
     """
+
     def test_get_with_save_doesnt_write(self):
         assert not self.field_data.has(self.block, 'field')
         self.get()
@@ -314,6 +314,7 @@ class DefaultValueMutationProperties(object):
         self.block  # An initialized xblock with a field named `field`
         self.field_data  # The field_data used by self.block
     """
+
     def test_mutation_without_save_doesnt_write(self):
         assert not self.field_data.has(self.block, 'field')
 
@@ -348,6 +349,7 @@ class InitialValueMutationProperties(object):
         self.block  # An initialized xblock with a field named `field`
         self.field_data  # The field_data used by self.blocks
     """
+
     def test_mutation_without_save_doesnt_write(self):
         initial_value = self.field_data.get(self.block, 'field')
         reference_copy = copy.deepcopy(initial_value)
@@ -388,23 +390,28 @@ class UniversalTestCases(UniversalProperties):
         self.field_default  # The static default value for the field
         self.get_field_data()  # A function that returns a new :class:`~xblock.field_data.FieldData` instance
     """
+
     # pylint: disable=attribute-defined-outside-init
     def setup_method(self):
         """
         Setup for each test method in the class.
         """
+
         class TestBlock(XBlock):
             """Testing block for all field API tests"""
+
             field = self.field_class(default=copy.deepcopy(self.field_default))
 
         self.field_data = self.get_field_data()
         self.runtime = TestRuntime(services={'field-data': self.field_data})
         self.block = TestBlock(self.runtime, scope_ids=Mock(spec=ScopeIds))
+
     # pylint: enable=attribute-defined-outside-init
 
 
 class DictFieldDataWithSequentialDefault(DictFieldData):
     """:class:`~xblock.test.tools.DictFieldData` that generates a sequence of default values"""
+
     def __init__(self, storage, sequence):
         super(DictFieldDataWithSequentialDefault, self).__init__(storage)
         self._sequence = sequence
@@ -415,6 +422,7 @@ class DictFieldDataWithSequentialDefault(DictFieldData):
 
 class StaticDefaultTestCases(UniversalTestCases, DefaultValueProperties):
     """Set up tests of static default values"""
+
     def get_field_data(self):
         """Return a new :class:`~xblock.field_data.FieldData` for testing"""
         return DictFieldData({})
@@ -422,6 +430,7 @@ class StaticDefaultTestCases(UniversalTestCases, DefaultValueProperties):
 
 class ComputedDefaultTestCases(UniversalTestCases, DefaultValueProperties):
     """Set up tests of computed default values"""
+
     def get_field_data(self):
         """Return a new :class:`~xblock.field_data.FieldData` for testing"""
         return DictFieldDataWithSequentialDefault({}, self.default_iterator)
@@ -429,6 +438,7 @@ class ComputedDefaultTestCases(UniversalTestCases, DefaultValueProperties):
 
 class ImmutableTestCases(UniversalTestCases):
     """Set up tests of an immutable field"""
+
     field_class = Integer
     field_default = 99
     new_value = 101
@@ -436,6 +446,7 @@ class ImmutableTestCases(UniversalTestCases):
 
 class MutableTestCases(UniversalTestCases, MutationProperties):
     """Set up tests of a mutable field"""
+
     field_class = List
     field_default = []
     new_value = ['a', 'b']
@@ -447,9 +458,12 @@ class MutableTestCases(UniversalTestCases, MutationProperties):
 
 class UniqueIdTestCases(ImmutableTestCases):
     """Set up tests for field with UNIQUE_ID default"""
+
     field_class = String
     field_default = UNIQUE_ID
     new_value = 'user-assigned ID'
+
+
 # pylint: enable=no-member
 
 
@@ -470,16 +484,22 @@ class TestImmutableWithComputedDefault(ImmutableTestCases, ComputedDefaultTestCa
         return six.moves.range(1000)
 
 
-class TestMutableWithStaticDefault(MutableTestCases, StaticDefaultTestCases, DefaultValueMutationProperties):
+class TestMutableWithStaticDefault(
+    MutableTestCases, StaticDefaultTestCases, DefaultValueMutationProperties
+):
     __test__ = False
 
 
-class TestMutableWithInitialValue(MutableTestCases, InitialValueProperties, InitialValueMutationProperties):
+class TestMutableWithInitialValue(
+    MutableTestCases, InitialValueProperties, InitialValueMutationProperties
+):
     __test__ = False
     initial_value = [1, 2, 3]
 
 
-class TestMutableWithComputedDefault(MutableTestCases, ComputedDefaultTestCases, DefaultValueMutationProperties):
+class TestMutableWithComputedDefault(
+    MutableTestCases, ComputedDefaultTestCases, DefaultValueMutationProperties
+):
     __test__ = False
 
     @property
@@ -492,7 +512,9 @@ class TestImmutableWithInitialValue(ImmutableTestCases, InitialValueProperties):
     initial_value = 75
 
 
-class TestImmutableWithInitialValueAndUniqueIdDefault(UniqueIdTestCases, InitialValueProperties):
+class TestImmutableWithInitialValueAndUniqueIdDefault(
+    UniqueIdTestCases, InitialValueProperties
+):
     __test__ = False
     initial_value = 'initial unique ID'
 
@@ -511,6 +533,7 @@ class GetNoopPrefix(object):
     Requires from subclasses:
         self.block  # An initialized xblock with a field named `field`
     """
+
     def setup_method(self):
         super(GetNoopPrefix, self).setup_method()
         self.get()
@@ -525,6 +548,7 @@ class GetSaveNoopPrefix(object):
     Requires from subclasses:
         self.block  # An initialized xblock with a field named `field`
     """
+
     def setup_method(self):
         super(GetSaveNoopPrefix, self).setup_method()
         self.get()
@@ -540,25 +564,33 @@ class SaveNoopPrefix(object):
     Requires from subclasses:
         self.block  # An initialized xblock with a field named `field`
     """
+
     def setup_method(self):
         super(SaveNoopPrefix, self).setup_method()
         self.block.save()
+
+
 # pylint: enable=no-member
 
 
 for operation_backend in (BlockFirstOperations, FieldFirstOperations):
     for noop_prefix in (None, GetNoopPrefix, GetSaveNoopPrefix, SaveNoopPrefix):
         for base_test_case in (
-                TestImmutableWithComputedDefault, TestImmutableWithInitialValue, TestImmutableWithStaticDefault,
-                TestMutableWithComputedDefault, TestMutableWithInitialValue, TestMutableWithStaticDefault,
-                TestImmutableWithUniqueIdDefault, TestImmutableWithInitialValueAndUniqueIdDefault
+            TestImmutableWithComputedDefault,
+            TestImmutableWithInitialValue,
+            TestImmutableWithStaticDefault,
+            TestMutableWithComputedDefault,
+            TestMutableWithInitialValue,
+            TestMutableWithStaticDefault,
+            TestImmutableWithUniqueIdDefault,
+            TestImmutableWithInitialValueAndUniqueIdDefault,
         ):
 
             test_name = base_test_case.__name__ + "With" + operation_backend.__name__
             test_classes = (operation_backend, base_test_case)
             if noop_prefix is not None:
                 test_name += "And" + noop_prefix.__name__
-                test_classes = (noop_prefix, ) + test_classes
+                test_classes = (noop_prefix,) + test_classes
 
             vars()[test_name] = type(
                 str(test_name),  # First argument must be native string type

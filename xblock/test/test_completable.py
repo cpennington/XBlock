@@ -23,6 +23,7 @@ class XBlockCompletionModeTest(TestCase):
     """
     Tests for XBlockCompletionMode
     """
+
     blocklike = namedtuple('block_like', ['completion_mode'])
 
     @ddt.data(
@@ -32,29 +33,23 @@ class XBlockCompletionModeTest(TestCase):
     )
     def test_explicit_mode(self, mode):
         block = self.blocklike(mode)
-        self.assertEqual(
-            XBlockCompletionMode.get_mode(block),
-            mode
-        )
+        self.assertEqual(XBlockCompletionMode.get_mode(block), mode)
 
     def test_no_mode(self):
         self.assertEqual(
-            XBlockCompletionMode.get_mode(object()),
-            XBlockCompletionMode.COMPLETABLE,
+            XBlockCompletionMode.get_mode(object()), XBlockCompletionMode.COMPLETABLE
         )
 
     def test_unknown_mode(self):
         block = self.blocklike('somenewmode')
-        self.assertEqual(
-            XBlockCompletionMode.get_mode(block),
-            'somenewmode'
-        )
+        self.assertEqual(XBlockCompletionMode.get_mode(block), 'somenewmode')
 
 
 class CompletableXBlockMixinTest(TestCase):
     """
     Tests for CompletableXBlockMixin.
     """
+
     class TestBuddyXBlock(XBlock, CompletableXBlockMixin):
         """
         Simple XBlock extending CompletableXBlockMixin.
@@ -64,12 +59,14 @@ class CompletableXBlockMixinTest(TestCase):
         """
         XBlock extending CompletableXBlockMixin using illegal `has_custom_completion` attribute.
         """
+
         has_custom_completion = False
 
     class TestIllegalCompletionMethodAttrXBlock(XBlock, CompletableXBlockMixin):
         """
         XBlock extending CompletableXBlockMixin using illegal `completion_mode` attribute.
         """
+
         completion_mode = "something_else"
 
     def _make_block(self, runtime=None, block_type=None):
@@ -94,8 +91,12 @@ class CompletableXBlockMixinTest(TestCase):
         Test `completion_mode` property is set by mixin.
         """
         block = self._make_block()
-        self.assertEqual(XBlockCompletionMode.get_mode(block), XBlockCompletionMode.COMPLETABLE)
-        self.assertEqual(getattr(block, 'completion_mode'), XBlockCompletionMode.COMPLETABLE)
+        self.assertEqual(
+            XBlockCompletionMode.get_mode(block), XBlockCompletionMode.COMPLETABLE
+        )
+        self.assertEqual(
+            getattr(block, 'completion_mode'), XBlockCompletionMode.COMPLETABLE
+        )
 
     @given(strategies.floats())
     def test_emit_completion_illegal_custom_completion(self, any_completion):
@@ -103,7 +104,9 @@ class CompletableXBlockMixinTest(TestCase):
         Test `emit_completion` raises exception when called on a XBlock with illegal `has_custom_completion` value.
         """
         runtime_mock = mock.Mock(spec=Runtime)
-        illegal_custom_completion_block = self._make_block(runtime_mock, self.TestIllegalCustomCompletionAttrXBlock)
+        illegal_custom_completion_block = self._make_block(
+            runtime_mock, self.TestIllegalCustomCompletionAttrXBlock
+        )
         with self.assertRaises(AttributeError):
             illegal_custom_completion_block.emit_completion(any_completion)
 
@@ -113,7 +116,9 @@ class CompletableXBlockMixinTest(TestCase):
         Test `emit_completion` raises exception when called on a XBlock with illegal `completion_mode` value.
         """
         runtime_mock = mock.Mock(spec=Runtime)
-        illegal_completion_mode_block = self._make_block(runtime_mock, self.TestIllegalCompletionMethodAttrXBlock)
+        illegal_completion_mode_block = self._make_block(
+            runtime_mock, self.TestIllegalCompletionMethodAttrXBlock
+        )
         with self.assertRaises(AttributeError):
             illegal_completion_mode_block.emit_completion(any_completion)
 
@@ -132,13 +137,17 @@ class CompletableXBlockMixinTest(TestCase):
         block = self._make_block(runtime_mock)
         block.emit_completion(valid_completion_percent)
 
-        runtime_mock.publish.assert_called_once_with(block, "completion", {"completion": valid_completion_percent})
+        runtime_mock.publish.assert_called_once_with(
+            block, "completion", {"completion": valid_completion_percent}
+        )
 
     @given(strategies.floats().filter(lambda x: math.isnan(x) or x < 0.0 or x > 1.0))
     @example(None)
     @example(float('+inf'))
     @example(float('-inf'))
-    def test_emit_completion_raises_assertion_error_if_invalid(self, invalid_completion_percent):
+    def test_emit_completion_raises_assertion_error_if_invalid(
+        self, invalid_completion_percent
+    ):
         """
         Test `emit_completion` raises exception when passed an invalid argument.
 

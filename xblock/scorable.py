@@ -46,10 +46,14 @@ class ScorableXBlockMixin(object):
         _ = self.runtime.service(self, 'i18n').ugettext
 
         if not self.allows_rescore():
-            raise TypeError(_('Problem does not support rescoring: {}').format(self.location))
+            raise TypeError(
+                _('Problem does not support rescoring: {}').format(self.location)
+            )
 
         if not self.has_submitted_answer():
-            raise ValueError(_('Cannot rescore unanswered problem: {}').format(self.location))
+            raise ValueError(
+                _('Cannot rescore unanswered problem: {}').format(self.location)
+            )
 
         new_score = self.calculate_score()
         self._publish_grade(new_score, only_if_higher)

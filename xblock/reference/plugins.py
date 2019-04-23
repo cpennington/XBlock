@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 try:
     from django.core.exceptions import ImproperlyConfigured
 except ImportError:
+
     class ImproperlyConfigured(Exception):
         '''
         If Django is installed, and djpyfs is installed, but we're not in a
@@ -20,7 +21,9 @@ except ImportError:
         either in a proper Django app, or don't have Django installed
         at all.
         '''
+
         pass
+
 
 try:
     from djpyfs import djpyfs  # pylint: disable=import-error
@@ -87,6 +90,7 @@ class Service(object):
     * We'd like them to be able to load through Stevedor, and have a
       plug-in mechanism similar to XBlock.
     """
+
     def __init__(self, **kwargs):
         # TODO: We need plumbing to set these
         self._runtime = kwargs.get('runtime', None)
@@ -127,6 +131,7 @@ class Filesystem(Field):
     src=...> will typically be faster through this than serving that
     up through XBlocks views.
     """
+
     MUTABLE = False
 
     def __get__(self, xblock, xblock_class):
@@ -168,6 +173,7 @@ class Filesystem(Field):
         """
         raise NotImplementedError
 
+
 #  edX-internal prototype services
 
 
@@ -186,6 +192,7 @@ class FSService(Service):
       or just as a field, as per below. Below requires an FS service,
       but it is not clear XBlocks should know about it.
     """
+
     @public()
     def load(self, instance, xblock):
         """

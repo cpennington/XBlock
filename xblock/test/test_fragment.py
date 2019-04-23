@@ -15,6 +15,7 @@ class TestFragment(TestCase):
     """
     Unit tests for fragments.
     """
+
     def test_fragment(self):
         """
         Test the delegated Fragment class.

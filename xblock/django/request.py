@@ -14,6 +14,7 @@ from webob.multidict import MultiDict, NestedMultiDict, NoVars
 def webob_to_django_response(webob_response):
     """Returns a django response to the `webob_response`"""
     from django.http import HttpResponse
+
     django_response = HttpResponse(
         webob_response.app_iter,
         content_type=webob_response.content_type,
@@ -30,6 +31,7 @@ class HeaderDict(MutableMapping, six.Iterator):
     Django request.META dictionary that translates the
     keys into actually HTTP header names
     """
+
     UNPREFIXED_HEADERS = ('CONTENT_TYPE', 'CONTENT_LENGTH')
 
     def __init__(self, meta):
@@ -81,16 +83,19 @@ def querydict_to_multidict(query_dict, wrap=None):
 
     """
     wrap = wrap or (lambda val: val)
-    return MultiDict(chain.from_iterable(
-        six.moves.zip(repeat(key), (wrap(v) for v in vals))
-        for key, vals in six.iterlists(query_dict)
-    ))
+    return MultiDict(
+        chain.from_iterable(
+            six.moves.zip(repeat(key), (wrap(v) for v in vals))
+            for key, vals in six.iterlists(query_dict)
+        )
+    )
 
 
 class DjangoUploadedFile(object):
     """
     Looks like a cgi.FieldStorage, but wraps a Django UploadedFile.
     """
+
     def __init__(self, uploaded):
         # FieldStorage needs a file attribute.
         self.file = uploaded
@@ -111,6 +116,7 @@ class DjangoWebobRequest(webob.Request):
     An implementation of the webob request api, backed
     by a django request
     """
+
     def __init__(self, request):
         self._request = request
         super(DjangoWebobRequest, self).__init__(self.environ)

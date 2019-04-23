@@ -28,9 +28,19 @@ from xblock.internal import Nameable
 
 # __all__ controls what classes end up in the docs, and in what order.
 __all__ = [
-    'BlockScope', 'UserScope', 'Scope', 'ScopeIds',
+    'BlockScope',
+    'UserScope',
+    'Scope',
+    'ScopeIds',
     'Field',
-    'Boolean', 'Dict', 'Float', 'Integer', 'List', 'Set', 'String', 'XMLString',
+    'Boolean',
+    'Dict',
+    'Float',
+    'Integer',
+    'List',
+    'Set',
+    'String',
+    'XMLString',
     'XBlockMixin',
 ]
 
@@ -39,6 +49,7 @@ class FailingEnforceTypeWarning(DeprecationWarning):
     """
     A warning triggered when enforce_type would cause a exception if enabled
     """
+
     pass
 
 
@@ -46,6 +57,7 @@ class ModifyingEnforceTypeWarning(DeprecationWarning):
     """
     A warning triggered when enforce_type would change a value if enabled
     """
+
     pass
 
 
@@ -53,6 +65,7 @@ class Sentinel(object):
     """
     Class for implementing sentinel objects (only equal to themselves).
     """
+
     def __init__(self, name):
         """
         `name` is the name used to identify the sentinel (which will
@@ -101,6 +114,7 @@ class BlockScope(object):
         information that is purely about the student.
 
     """
+
     USAGE = Sentinel('BlockScope.USAGE')
     DEFINITION = Sentinel('BlockScope.DEFINITION')
     TYPE = Sentinel('BlockScope.TYPE')
@@ -138,6 +152,7 @@ class UserScope(object):
         submitted by all students.
 
     """
+
     NONE = Sentinel('UserScope.NONE')
     ONE = Sentinel('UserScope.ONE')
     ALL = Sentinel('UserScope.ALL')
@@ -191,12 +206,15 @@ class Scope(ScopeBase):
     the points scored by all users attempting a problem.
 
     """
+
     content = ScopeBase(UserScope.NONE, BlockScope.DEFINITION, 'content')
     settings = ScopeBase(UserScope.NONE, BlockScope.USAGE, 'settings')
     user_state = ScopeBase(UserScope.ONE, BlockScope.USAGE, 'user_state')
     preferences = ScopeBase(UserScope.ONE, BlockScope.TYPE, 'preferences')
     user_info = ScopeBase(UserScope.ONE, BlockScope.ALL, 'user_info')
-    user_state_summary = ScopeBase(UserScope.ALL, BlockScope.USAGE, 'user_state_summary')
+    user_state_summary = ScopeBase(
+        UserScope.ALL, BlockScope.USAGE, 'user_state_summary'
+    )
 
     @classmethod
     def named_scopes(cls):
@@ -207,7 +225,7 @@ class Scope(ScopeBase):
             cls.user_state,
             cls.preferences,
             cls.user_info,
-            cls.user_state_summary
+            cls.user_state_summary,
         ]
 
     @classmethod
@@ -236,7 +254,11 @@ class Scope(ScopeBase):
         return self.name
 
     def __eq__(self, other):
-        return isinstance(other, Scope) and self.user == other.user and self.block == other.block
+        return (
+            isinstance(other, Scope)
+            and self.user == other.user
+            and self.block == other.block
+        )
 
     def __hash__(self):
         return hash(('xblock.fields.Scope', self.user, self.block))
@@ -249,6 +271,7 @@ class ScopeIds(namedtuple('ScopeIds', 'user_id block_type def_id usage_id')):
     These identifiers match up with BlockScope and UserScope attributes, so that,
     for instance, the `def_id` identifies scopes that use BlockScope.DEFINITION.
     """
+
     __slots__ = ()
 
 
@@ -314,15 +337,25 @@ class Field(Nameable):
             runtime_options.
 
     """
+
     MUTABLE = True
     _default = None
     # Indicates if a field's None value should be sent to the XML representation.
     none_to_xml = False
 
     # We're OK redefining built-in `help`
-    def __init__(self, help=None, default=UNSET, scope=Scope.content,  # pylint:disable=redefined-builtin
-                 display_name=None, values=None, enforce_type=False,
-                 xml_node=False, force_export=False, **kwargs):
+    def __init__(
+        self,
+        help=None,
+        default=UNSET,
+        scope=Scope.content,  # pylint:disable=redefined-builtin
+        display_name=None,
+        values=None,
+        enforce_type=False,
+        xml_node=False,
+        force_export=False,
+        **kwargs
+    ):
         self.warned = False
         self.help = help
         self._enable_enforce_type = enforce_type
@@ -411,7 +444,10 @@ class Field(Nameable):
     def _del_cached_value(self, xblock):
         """Remove a value from the xblock's cache, if the cache exists."""
         # pylint: disable=protected-access
-        if hasattr(xblock, '_field_data_cache') and self.name in xblock._field_data_cache:
+        if (
+            hasattr(xblock, '_field_data_cache')
+            and self.name in xblock._field_data_cache
+        ):
             del xblock._field_data_cache[self.name]
 
     def _mark_dirty(self, xblock, value):
@@ -432,7 +468,10 @@ class Field(Nameable):
             return False
 
         baseline = xblock._dirty_fields[self]
-        return baseline is EXPLICITLY_SET or xblock._field_data_cache[self.name] != baseline
+        return (
+            baseline is EXPLICITLY_SET
+            or xblock._field_data_cache[self.name] != baseline
+        )
 
     def _is_lazy(self, value):
         """
@@ -457,7 +496,8 @@ class Field(Nameable):
             new_value = self.enforce_type(value)
         except:  # pylint: disable=bare-except
             message = "The value {!r} could not be enforced ({})".format(
-                value, traceback.format_exc().splitlines()[-1])
+                value, traceback.format_exc().splitlines()[-1]
+            )
             warnings.warn(message, FailingEnforceTypeWarning, stacklevel=3)
         else:
             try:
@@ -466,7 +506,8 @@ class Field(Nameable):
                 equal = False
             if not equal:
                 message = "The value {!r} would be enforced to {!r}".format(
-                    value, new_value)
+                    value, new_value
+                )
                 warnings.warn(message, ModifyingEnforceTypeWarning, stacklevel=3)
 
         return value
@@ -594,9 +635,11 @@ class Field(Nameable):
         """
         if not isinstance(self, JSONField) and not self.warned:
             warnings.warn(
-                "Deprecated. JSONifiable fields should derive from JSONField ({name})".format(name=self.name),
+                "Deprecated. JSONifiable fields should derive from JSONField ({name})".format(
+                    name=self.name
+                ),
                 DeprecationWarning,
-                stacklevel=3
+                stacklevel=3,
             )
             self.warned = True
 
@@ -627,10 +670,7 @@ class Field(Nameable):
         """
         self._warn_deprecated_outside_JSONField()
         value = json.dumps(
-            self.to_json(value),
-            indent=2,
-            sort_keys=True,
-            separators=(',', ': '),
+            self.to_json(value), indent=2, sort_keys=True, separators=(',', ': ')
         )
         return value
 
@@ -695,6 +735,7 @@ class JSONField(Field):
     """
     Field type which has a convenient JSON representation.
     """
+
     pass  # for now; we'll bubble functions down when we finish deprecation in Field
 
 
@@ -710,6 +751,7 @@ class Integer(JSONField):
     containing a floating point number ('3.48') will throw an error.
 
     """
+
     MUTABLE = False
 
     def from_json(self, value):
@@ -729,6 +771,7 @@ class Float(JSONField):
     something for which float(value) does not throw an error.
 
     """
+
     MUTABLE = False
 
     def from_json(self, value):
@@ -759,14 +802,24 @@ class Boolean(JSONField):
         None - > False
 
     """
+
     MUTABLE = False
 
     # We're OK redefining built-in `help`
-    def __init__(self, help=None, default=UNSET, scope=Scope.content, display_name=None, **kwargs):  # pylint: disable=redefined-builtin
-        super(Boolean, self).__init__(help, default, scope, display_name,
-                                      values=({'display_name': "True", "value": True},
-                                              {'display_name': "False", "value": False}),
-                                      **kwargs)
+    def __init__(
+        self, help=None, default=UNSET, scope=Scope.content, display_name=None, **kwargs
+    ):  # pylint: disable=redefined-builtin
+        super(Boolean, self).__init__(
+            help,
+            default,
+            scope,
+            display_name,
+            values=(
+                {'display_name': "True", "value": True},
+                {'display_name': "False", "value": False},
+            ),
+            **kwargs
+        )
 
     def from_json(self, value):
         if isinstance(value, six.binary_type):
@@ -786,13 +839,16 @@ class Dict(JSONField):
     The value, as loaded or enforced, must be either be None or a dict.
 
     """
+
     _default = {}
 
     def from_json(self, value):
         if value is None or isinstance(value, dict):
             return value
         else:
-            raise TypeError('Value stored in a Dict must be None or a dict, found %s' % type(value))
+            raise TypeError(
+                'Value stored in a Dict must be None or a dict, found %s' % type(value)
+            )
 
     enforce_type = from_json
 
@@ -816,13 +872,16 @@ class List(JSONField):
     The value, as loaded or enforced, can either be None or a list.
 
     """
+
     _default = []
 
     def from_json(self, value):
         if value is None or isinstance(value, list):
             return value
         else:
-            raise TypeError('Value stored in a List must be None or a list, found %s' % type(value))
+            raise TypeError(
+                'Value stored in a List must be None or a list, found %s' % type(value)
+            )
 
     enforce_type = from_json
 
@@ -834,6 +893,7 @@ class Set(JSONField):
     The stored value can either be None or a set.
 
     """
+
     _default = set()
 
     def __init__(self, *args, **kwargs):
@@ -862,6 +922,7 @@ class String(JSONField):
     The value, as loaded or enforced, can either be None or a basestring instance.
 
     """
+
     MUTABLE = False
     VALID_CONTROLS = {'\n', '\r', '\t'}
 
@@ -869,7 +930,10 @@ class String(JSONField):
         """
         Strip invalid control characters from a unicode text object.
         """
-        return unicodedata.category(character)[0] != 'C' or character in self.VALID_CONTROLS
+        return (
+            unicodedata.category(character)[0] != 'C'
+            or character in self.VALID_CONTROLS
+        )
 
     def _sanitize(self, value):
         """
@@ -895,7 +959,10 @@ class String(JSONField):
             # The translated values are *not* sanitized.
             return value
         else:
-            raise TypeError('Value stored in a String must be None or a string, found %s' % type(value))
+            raise TypeError(
+                'Value stored in a String must be None or a string, found %s'
+                % type(value)
+            )
 
     def from_string(self, value):
         """String gets serialized and deserialized without quote marks."""
@@ -972,7 +1039,9 @@ class DateTime(JSONField):
 
         if not isinstance(value, datetime.datetime):
             raise TypeError(
-                "Value should be loaded from a string, a datetime object or None, not {}".format(type(value))
+                "Value should be loaded from a string, a datetime object or None, not {}".format(
+                    type(value)
+                )
             )
 
         if value.tzinfo is not None:  # pylint: disable=maybe-no-member
@@ -988,7 +1057,9 @@ class DateTime(JSONField):
             return value.strftime(self.DATETIME_FORMAT)
         if value is None:
             return None
-        raise TypeError("Value stored must be a datetime object, not {}".format(type(value)))
+        raise TypeError(
+            "Value stored must be a datetime object, not {}".format(type(value))
+        )
 
     def to_string(self, value):
         """DateTime fields get serialized without quote marks."""
@@ -1005,6 +1076,7 @@ class Any(JSONField):
 
     THIS SHOULD BE DEPRECATED. THIS SHOULD EITHER BE ANY JSON DATA, OR IT MAKES NO SENSE
     """
+
     pass
 
 
@@ -1015,6 +1087,7 @@ class Reference(JSONField):
     It's up to the runtime to know how to dereference this field type, but the field type enables the
     runtime to know that it must do the interpretation.
     """
+
     pass
 
 
@@ -1025,6 +1098,7 @@ class ReferenceList(List):
     It's up to the runtime to know how to dereference the elements of the list. The field type enables the
     runtime to know that it must do the interpretation.
     """
+
     # this could define from_json and to_json as list comprehensions calling from/to_json on the list eles,
     # but since Reference doesn't stipulate a definition for from/to, that seems unnecessary at this time.
     pass
@@ -1037,6 +1111,7 @@ class ReferenceValueDict(Dict):
     It's up to the runtime to know how to dereference the elements of the list. The field type enables the
     runtime to know that it must do the interpretation.
     """
+
     # this could define from_json and to_json as list comprehensions calling from/to_json on the list eles,
     # but since Reference doesn't stipulate a definition for from/to, that seems unnecessary at this time.
     pass
@@ -1102,7 +1177,9 @@ def scope_key(instance, xblock):
         raise NotImplementedError()
 
     replacements = itertools.product("._-", "._-")
-    substitution_list = dict(six.moves.zip("./\\,_ +:-", ("".join(x) for x in replacements)))
+    substitution_list = dict(
+        six.moves.zip("./\\,_ +:-", ("".join(x) for x in replacements))
+    )
     # Above runs in 4.7us, and generates a list of common substitutions:
     # {' ': '_-', '+': '-.', '-': '--', ',': '_.', '/': '._', '.': '..', ':': '-_', '\\': '.-', '_': '__'}
 

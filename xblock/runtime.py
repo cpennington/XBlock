@@ -41,14 +41,21 @@ log = logging.getLogger(__name__)
 class KeyValueStore(six.with_metaclass(ABCMeta, object)):
     """The abstract interface for Key Value Stores."""
 
-    class Key(namedtuple("Key", "scope, user_id, block_scope_id, field_name, block_family")):
+    class Key(
+        namedtuple("Key", "scope, user_id, block_scope_id, field_name, block_family")
+    ):
         """
         Keys are structured to retain information about the scope of the data.
         Stores can use this information however they like to store and retrieve
         data.
         """
-        def __new__(cls, scope, user_id, block_scope_id, field_name, block_family='xblock.v1'):
-            return super(KeyValueStore.Key, cls).__new__(cls, scope, user_id, block_scope_id, field_name, block_family)
+
+        def __new__(
+            cls, scope, user_id, block_scope_id, field_name, block_family='xblock.v1'
+        ):
+            return super(KeyValueStore.Key, cls).__new__(
+                cls, scope, user_id, block_scope_id, field_name, block_family
+            )
 
     @abstractmethod
     def get(self, key):
@@ -95,6 +102,7 @@ class DictKeyValueStore(KeyValueStore):
     """
     A `KeyValueStore` that stores everything into a Python dictionary.
     """
+
     def __init__(self, storage=None):
         self.db_dict = storage if storage is not None else {}
 
@@ -242,7 +250,7 @@ class KvsFieldData(FieldData):
 
 
 # The old name for KvsFieldData, to ease transition.
-DbModel = KvsFieldData                                  # pylint: disable=C0103
+DbModel = KvsFieldData  # pylint: disable=C0103
 
 
 class IdReader(six.with_metaclass(ABCMeta, object)):
@@ -366,7 +374,9 @@ class MemoryIdManager(IdReader, IdGenerator):
     """A simple dict-based implementation of IdReader and IdGenerator."""
 
     ASIDE_USAGE_ID = namedtuple('MemoryAsideUsageId', 'usage_id aside_type')
-    ASIDE_DEFINITION_ID = namedtuple('MemoryAsideDefinitionId', 'definition_id aside_type')
+    ASIDE_DEFINITION_ID = namedtuple(
+        'MemoryAsideDefinitionId', 'definition_id aside_type'
+    )
 
     def __init__(self):
         self._ids = itertools.count()
@@ -522,8 +532,14 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
     # Construction
     def __init__(
-            self, id_reader, field_data=None, mixins=(), services=None,
-            default_class=None, select=None, id_generator=None
+        self,
+        id_reader,
+        field_data=None,
+        mixins=(),
+        services=None,
+        default_class=None,
+        select=None,
+        id_generator=None,
     ):
         """
         Arguments:
@@ -557,12 +573,14 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         # Provide some default implementations
         self._services.setdefault("i18n", NullI18nService())
 
-        self._deprecated_per_instance_field_data = field_data  # pylint: disable=invalid-name
+        self._deprecated_per_instance_field_data = (
+            field_data
+        )  # pylint: disable=invalid-name
         if field_data:
             warnings.warn(
                 "Passing field_data as a constructor argument to Runtimes is deprecated",
                 FieldDataDeprecationWarning,
-                stacklevel=2
+                stacklevel=2,
             )
             self._services.setdefault("field-data", field_data)
 
@@ -575,7 +593,10 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
         self.id_generator = id_generator
         if id_generator is None:
-            warnings.warn("IdGenerator will be required in the future in order to support XBlockAsides", FutureWarning)
+            warnings.warn(
+                "IdGenerator will be required in the future in order to support XBlockAsides",
+                FutureWarning,
+            )
 
     # Block operations
 
@@ -586,7 +607,11 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
         Deprecated in favor of a 'field-data' service.
         """
-        warnings.warn("Runtime.field_data is deprecated", FieldDataDeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Runtime.field_data is deprecated",
+            FieldDataDeprecationWarning,
+            stacklevel=2,
+        )
         return self._deprecated_per_instance_field_data
 
     @field_data.setter
@@ -596,7 +621,11 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
         Deprecated in favor of a 'field-data' service.
         """
-        warnings.warn("Runtime.field_data is deprecated", FieldDataDeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Runtime.field_data is deprecated",
+            FieldDataDeprecationWarning,
+            stacklevel=2,
+        )
         self._deprecated_per_instance_field_data = field_data
 
     def load_block_type(self, block_type):
@@ -620,19 +649,19 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
             cls=self.load_block_type(block_type),
             scope_ids=scope_ids,
             field_data=field_data,
-            *args, **kwargs
+            *args,
+            **kwargs
         )
 
-    def construct_xblock_from_class(self, cls, scope_ids, field_data=None, *args, **kwargs):
+    def construct_xblock_from_class(
+        self, cls, scope_ids, field_data=None, *args, **kwargs
+    ):
         """
         Construct a new xblock of type cls, mixing in the mixins
         defined for this application.
         """
         return self.mixologist.mix(cls)(
-            runtime=self,
-            field_data=field_data,
-            scope_ids=scope_ids,
-            *args, **kwargs
+            runtime=self, field_data=field_data, scope_ids=scope_ids, *args, **kwargs
         )
 
     def get_block(self, usage_id, for_parent=None):
@@ -659,7 +688,9 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         aside_type = self.id_reader.get_aside_type_from_usage(aside_usage_id)
         xblock_usage = self.id_reader.get_usage_id_from_aside(aside_usage_id)
         xblock_def = self.id_reader.get_definition_id(xblock_usage)
-        aside_def_id, aside_usage_id = self.id_generator.create_aside(xblock_def, xblock_usage, aside_type)
+        aside_def_id, aside_usage_id = self.id_generator.create_aside(
+            xblock_def, xblock_usage, aside_type
+        )
 
         keys = ScopeIds(self.user_id, aside_type, aside_def_id, aside_usage_id)
         block = self.create_aside(aside_type, keys)
@@ -743,7 +774,9 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
         aside_type = node.tag
         aside_class = self.load_aside_type(aside_type)
-        aside_def_id, aside_usage_id = id_generator.create_aside(block_def_id, block_usage_id, aside_type)
+        aside_def_id, aside_usage_id = id_generator.create_aside(
+            block_def_id, block_usage_id, aside_type
+        )
         keys = ScopeIds(None, aside_type, aside_def_id, aside_usage_id)
         aside = aside_class.parse_xml(node, self, keys, id_generator)
         aside.save()
@@ -752,7 +785,9 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         """
         Called by XBlock.parse_xml to treat a child node as a child block.
         """
-        usage_id = self._usage_id_from_node(node, block.scope_ids.usage_id, id_generator)
+        usage_id = self._usage_id_from_node(
+            node, block.scope_ids.usage_id, id_generator
+        )
         block.children.append(usage_id)
 
     # Exporting XML
@@ -855,13 +890,20 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         javascript, you'll need to override this impl
         """
         if hasattr(self, 'wrap_child'):
-            log.warning("wrap_child is deprecated in favor of wrap_xblock and wrap_aside %s", self.__class__)
-            return self.wrap_child(block, view, frag, context)  # pylint: disable=no-member
+            log.warning(
+                "wrap_child is deprecated in favor of wrap_xblock and wrap_aside %s",
+                self.__class__,
+            )
+            return self.wrap_child(
+                block, view, frag, context
+            )  # pylint: disable=no-member
 
         extra_data = {'name': block.name} if block.name else {}
         return self._wrap_ele(block, view, frag, extra_data)
 
-    def wrap_aside(self, block, aside, view, frag, context):  # pylint: disable=unused-argument
+    def wrap_aside(
+        self, block, aside, view, frag, context
+    ):  # pylint: disable=unused-argument
         """
         Creates a div which identifies the aside, points to the original block,
         and writes out the json_init_args into a script tag.
@@ -870,10 +912,11 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         javascript, you'll need to override this impl
         """
         return self._wrap_ele(
-            aside, view, frag, {
-                'block_id': block.scope_ids.usage_id,
-                'url_selector': 'asideBaseUrl',
-            })
+            aside,
+            view,
+            frag,
+            {'block_id': block.scope_ids.usage_id, 'url_selector': 'asideBaseUrl'},
+        )
 
     def _wrap_ele(self, block, view, frag, extra_data=None):
         """
@@ -903,16 +946,14 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
             ).format(data=json.dumps(frag.json_init_args))
 
         block_css_entrypoint = block.entry_point.replace('.', '-')
-        css_classes = [
-            block_css_entrypoint,
-            '{}-{}'.format(block_css_entrypoint, view),
-        ]
+        css_classes = [block_css_entrypoint, '{}-{}'.format(block_css_entrypoint, view)]
 
         html = "<div class='{}'{properties}>{body}{js}</div>".format(
             markupsafe.escape(' '.join(css_classes)),
             properties="".join(" data-%s='%s'" % item for item in list(data.items())),
             body=frag.body_html(),
-            js=json_init)
+            js=json_init,
+        )
 
         wrapped.add_content(html)
         wrapped.add_fragment_resources(frag)
@@ -942,7 +983,8 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
             for aside_type in self.applicable_aside_types(block)
         ]
         return [
-            aside_instance for aside_instance in aside_instances
+            aside_instance
+            for aside_instance in aside_instances
             if aside_instance.should_apply_to_block(block)
         ]
 
@@ -969,13 +1011,17 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         #   c) Optimize by only loading asides that actually decorate a particular view
 
         if self.id_generator is None:
-            raise Exception("Runtimes must be supplied with an IdGenerator to load XBlockAsides.")
+            raise Exception(
+                "Runtimes must be supplied with an IdGenerator to load XBlockAsides."
+            )
 
         usage_id = block.scope_ids.usage_id
 
         aside_cls = self.load_aside_type(aside_type)
         definition_id = self.id_reader.get_definition_id(usage_id)
-        aside_def_id, aside_usage_id = self.id_generator.create_aside(definition_id, usage_id, aside_type)
+        aside_def_id, aside_usage_id = self.id_generator.create_aside(
+            definition_id, usage_id, aside_type
+        )
         scope_ids = ScopeIds(self.user_id, aside_type, aside_def_id, aside_usage_id)
         return aside_cls(runtime=self, scope_ids=scope_ids)
 
@@ -1011,7 +1057,9 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         result.add_fragment_resources(frag)
 
         for aside, aside_fn in aside_frag_fns:
-            aside_frag = self.wrap_aside(block, aside, view_name, aside_fn(block, context), context)
+            aside_frag = self.wrap_aside(
+                block, aside, view_name, aside_fn(block, context), context
+            )
             aside.save()
             result.add_content(aside_frag.content)
             result.add_fragment_resources(aside_frag)
@@ -1037,11 +1085,15 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
             results = handler(request, suffix)
         else:
             fallback_handler = getattr(block, "fallback_handler", None)
-            if fallback_handler and getattr(fallback_handler, '_is_xblock_handler', False):
+            if fallback_handler and getattr(
+                fallback_handler, '_is_xblock_handler', False
+            ):
                 # Cache results of the handler call for later saving
                 results = fallback_handler(handler_name, request, suffix)
             else:
-                raise NoSuchHandlerError("Couldn't find handler %r for %r" % (handler_name, block))
+                raise NoSuchHandlerError(
+                    "Couldn't find handler %r for %r" % (handler_name, block)
+                )
 
         # Write out dirty fields
         block.save()
@@ -1075,10 +1127,14 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         """
         declaration = block.service_declaration(service_name)
         if declaration is None:
-            raise NoSuchServiceError("Service {!r} was not requested.".format(service_name))
+            raise NoSuchServiceError(
+                "Service {!r} was not requested.".format(service_name)
+            )
         service = self._services.get(service_name)
         if service is None and declaration == "need":
-            raise NoSuchServiceError("Service {!r} is not available.".format(service_name))
+            raise NoSuchServiceError(
+                "Service {!r} is not available.".format(service_name)
+            )
         return service
 
     # Querying
@@ -1094,11 +1150,14 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
     def querypath(self, block, path):
         """An XPath-like interface to `query`."""
+
         class BadPath(Exception):
             """Bad path exception thrown when path cannot be found."""
+
             pass
+
         results = self.query(block)
-        ROOT, SEP, WORD, FINAL = six.moves.range(4)               # pylint: disable=C0103
+        ROOT, SEP, WORD, FINAL = six.moves.range(4)  # pylint: disable=C0103
         state = ROOT
         lexer = RegexLexer(
             ("dotdot", r"\.\."),
@@ -1209,6 +1268,7 @@ class Mixologist(object):
     """
     Provides a facility to dynamically generate classes with additional mixins.
     """
+
     def __init__(self, mixins):
         """
         :param mixins: Classes to mixin
@@ -1228,9 +1288,7 @@ class Mixologist(object):
             base_class = cls.unmixed_class
             old_mixins = cls.__bases__[1:]  # Skip the original unmixed class
             mixins = old_mixins + tuple(
-                mixin
-                for mixin in self._mixins
-                if mixin not in old_mixins
+                mixin for mixin in self._mixins if mixin not in old_mixins
             )
         else:
             base_class = cls
@@ -1244,17 +1302,22 @@ class Mixologist(object):
                 # Use setdefault so that if someone else has already
                 # created a class before we got the lock, we don't
                 # overwrite it
-                return _CLASS_CACHE.setdefault(mixin_key, type(
-                    base_class.__name__ + str('WithMixins'),  # type() requires native str
-                    (base_class, ) + mixins,
-                    {'unmixed_class': base_class}
-                ))
+                return _CLASS_CACHE.setdefault(
+                    mixin_key,
+                    type(
+                        base_class.__name__
+                        + str('WithMixins'),  # type() requires native str
+                        (base_class,) + mixins,
+                        {'unmixed_class': base_class},
+                    ),
+                )
         else:
             return _CLASS_CACHE[mixin_key]
 
 
 class RegexLexer(object):
     """Split text into lexical tokens based on regexes."""
+
     def __init__(self, *toks):
         parts = []
         for name, regex in toks:
@@ -1272,6 +1335,7 @@ class NullI18nService(object):
     """
     A simple implementation of the runtime "i18n" service.
     """
+
     def __init__(self):
         self._translations = gettext.NullTranslations()
 
@@ -1285,7 +1349,7 @@ class NullI18nService(object):
         "DATE_TIME_FORMAT": "%b %d, %Y at %H:%M",
     }
 
-    def strftime(self, dtime, format):      # pylint: disable=redefined-builtin
+    def strftime(self, dtime, format):  # pylint: disable=redefined-builtin
         """
         Locale-aware strftime, with format short-cuts.
         """
