@@ -28,20 +28,20 @@ from xblock.internal import Nameable
 
 # __all__ controls what classes end up in the docs, and in what order.
 __all__ = [
-    'BlockScope',
-    'UserScope',
-    'Scope',
-    'ScopeIds',
-    'Field',
-    'Boolean',
-    'Dict',
-    'Float',
-    'Integer',
-    'List',
-    'Set',
-    'String',
-    'XMLString',
-    'XBlockMixin',
+    "BlockScope",
+    "UserScope",
+    "Scope",
+    "ScopeIds",
+    "Field",
+    "Boolean",
+    "Dict",
+    "Float",
+    "Integer",
+    "List",
+    "Set",
+    "String",
+    "XMLString",
+    "XBlockMixin",
 ]
 
 
@@ -80,7 +80,7 @@ class Sentinel(object):
     def attr_name(self):
         """ TODO: Look into namespace collisions. block.name_space == block_name.space
         """
-        return self.name.lower().replace('.', '_')
+        return self.name.lower().replace(".", "_")
 
     def __eq__(self, other):
         """ Equality is based on being of the same class, and having same name
@@ -115,10 +115,10 @@ class BlockScope(object):
 
     """
 
-    USAGE = Sentinel('BlockScope.USAGE')
-    DEFINITION = Sentinel('BlockScope.DEFINITION')
-    TYPE = Sentinel('BlockScope.TYPE')
-    ALL = Sentinel('BlockScope.ALL')
+    USAGE = Sentinel("BlockScope.USAGE")
+    DEFINITION = Sentinel("BlockScope.DEFINITION")
+    TYPE = Sentinel("BlockScope.TYPE")
+    ALL = Sentinel("BlockScope.ALL")
 
     @classmethod
     def scopes(cls):
@@ -153,9 +153,9 @@ class UserScope(object):
 
     """
 
-    NONE = Sentinel('UserScope.NONE')
-    ONE = Sentinel('UserScope.ONE')
-    ALL = Sentinel('UserScope.ALL')
+    NONE = Sentinel("UserScope.NONE")
+    ONE = Sentinel("UserScope.ONE")
+    ALL = Sentinel("UserScope.ALL")
 
     @classmethod
     def scopes(cls):
@@ -169,7 +169,7 @@ class UserScope(object):
 UNSET = Sentinel("fields.UNSET")
 
 
-ScopeBase = namedtuple('ScopeBase', 'user block name')
+ScopeBase = namedtuple("ScopeBase", "user block name")
 
 
 @six.python_2_unicode_compatible
@@ -207,13 +207,13 @@ class Scope(ScopeBase):
 
     """
 
-    content = ScopeBase(UserScope.NONE, BlockScope.DEFINITION, 'content')
-    settings = ScopeBase(UserScope.NONE, BlockScope.USAGE, 'settings')
-    user_state = ScopeBase(UserScope.ONE, BlockScope.USAGE, 'user_state')
-    preferences = ScopeBase(UserScope.ONE, BlockScope.TYPE, 'preferences')
-    user_info = ScopeBase(UserScope.ONE, BlockScope.ALL, 'user_info')
+    content = ScopeBase(UserScope.NONE, BlockScope.DEFINITION, "content")
+    settings = ScopeBase(UserScope.NONE, BlockScope.USAGE, "settings")
+    user_state = ScopeBase(UserScope.ONE, BlockScope.USAGE, "user_state")
+    preferences = ScopeBase(UserScope.ONE, BlockScope.TYPE, "preferences")
+    user_info = ScopeBase(UserScope.ONE, BlockScope.ALL, "user_info")
     user_state_summary = ScopeBase(
-        UserScope.ALL, BlockScope.USAGE, 'user_state_summary'
+        UserScope.ALL, BlockScope.USAGE, "user_state_summary"
     )
 
     @classmethod
@@ -243,12 +243,12 @@ class Scope(ScopeBase):
         """Create a new Scope, with an optional name."""
 
         if name is None:
-            name = '{}_{}'.format(user, block)
+            name = "{}_{}".format(user, block)
 
         return ScopeBase.__new__(cls, user, block, name)
 
-    children = Sentinel('Scope.children')
-    parent = Sentinel('Scope.parent')
+    children = Sentinel("Scope.children")
+    parent = Sentinel("Scope.parent")
 
     def __str__(self):
         return self.name
@@ -261,10 +261,10 @@ class Scope(ScopeBase):
         )
 
     def __hash__(self):
-        return hash(('xblock.fields.Scope', self.user, self.block))
+        return hash(("xblock.fields.Scope", self.user, self.block))
 
 
-class ScopeIds(namedtuple('ScopeIds', 'user_id block_type def_id usage_id')):
+class ScopeIds(namedtuple("ScopeIds", "user_id block_type def_id usage_id")):
     """
     A simple wrapper to collect all of the ids needed to correctly identify an XBlock
     (or other classes deriving from ScopedStorageMixin) to a FieldData.
@@ -290,7 +290,7 @@ EXPLICITLY_SET = Sentinel("fields.EXPLICITLY_SET")
 
 # Fields that cannot have runtime-generated defaults. These are special,
 # because they define the structure of XBlock trees.
-NO_GENERATED_DEFAULTS = ('parent', 'children')
+NO_GENERATED_DEFAULTS = ("parent", "children")
 
 
 class Field(Nameable):
@@ -383,7 +383,7 @@ class Field(Nameable):
     def name(self):
         """Returns the name of this field."""
         # This is set by ModelMetaclass
-        return self.__name__ or 'unknown'
+        return self.__name__ or "unknown"
 
     @property
     def values(self):
@@ -432,12 +432,12 @@ class Field(Nameable):
         Return a value from the xblock's cache, or a marker value if either the cache
         doesn't exist or the value is not found in the cache.
         """
-        return getattr(xblock, '_field_data_cache', {}).get(self.name, NO_CACHE_VALUE)
+        return getattr(xblock, "_field_data_cache", {}).get(self.name, NO_CACHE_VALUE)
 
     def _set_cached_value(self, xblock, value):
         """Store a value in the xblock's cache, creating the cache if necessary."""
         # pylint: disable=protected-access
-        if not hasattr(xblock, '_field_data_cache'):
+        if not hasattr(xblock, "_field_data_cache"):
             xblock._field_data_cache = {}
         xblock._field_data_cache[self.name] = value
 
@@ -445,7 +445,7 @@ class Field(Nameable):
         """Remove a value from the xblock's cache, if the cache exists."""
         # pylint: disable=protected-access
         if (
-            hasattr(xblock, '_field_data_cache')
+            hasattr(xblock, "_field_data_cache")
             and self.name in xblock._field_data_cache
         ):
             del xblock._field_data_cache[self.name]
@@ -477,7 +477,7 @@ class Field(Nameable):
         """
         Detect if a value is being evaluated lazily by Django.
         """
-        return 'django.utils.functional.' in str(type(value))
+        return "django.utils.functional." in str(type(value))
 
     def _check_or_enforce_type(self, value):
         """
@@ -520,7 +520,7 @@ class Field(Nameable):
         for the field in its given scope.
         """
         key = scope_key(self, xblock)
-        return hashlib.sha1(key.encode('utf-8')).hexdigest()
+        return hashlib.sha1(key.encode("utf-8")).hexdigest()
 
     def _get_default_value_to_cache(self, xblock):
         """
@@ -670,7 +670,7 @@ class Field(Nameable):
         """
         self._warn_deprecated_outside_JSONField()
         value = json.dumps(
-            self.to_json(value), indent=2, sort_keys=True, separators=(',', ': ')
+            self.to_json(value), indent=2, sort_keys=True, separators=(",", ": ")
         )
         return value
 
@@ -755,7 +755,7 @@ class Integer(JSONField):
     MUTABLE = False
 
     def from_json(self, value):
-        if value is None or value == '':
+        if value is None or value == "":
             return None
         return int(value)
 
@@ -775,7 +775,7 @@ class Float(JSONField):
     MUTABLE = False
 
     def from_json(self, value):
-        if value is None or value == '':
+        if value is None or value == "":
             return None
         return float(value)
 
@@ -815,17 +815,17 @@ class Boolean(JSONField):
             scope,
             display_name,
             values=(
-                {'display_name': "True", "value": True},
-                {'display_name': "False", "value": False},
+                {"display_name": "True", "value": True},
+                {"display_name": "False", "value": False},
             ),
             **kwargs
         )
 
     def from_json(self, value):
         if isinstance(value, six.binary_type):
-            value = value.decode('ascii', errors='replace')
+            value = value.decode("ascii", errors="replace")
         if isinstance(value, six.text_type):
-            return value.lower() == 'true'
+            return value.lower() == "true"
         else:
             return bool(value)
 
@@ -847,7 +847,7 @@ class Dict(JSONField):
             return value
         else:
             raise TypeError(
-                'Value stored in a Dict must be None or a dict, found %s' % type(value)
+                "Value stored in a Dict must be None or a dict, found %s" % type(value)
             )
 
     enforce_type = from_json
@@ -860,7 +860,7 @@ class Dict(JSONField):
         self.enforce_type(value)
         if isinstance(value, dict) and None in value:
             value = value.copy()
-            value['null'] = value[None]
+            value["null"] = value[None]
             del value[None]
         return super(Dict, self).to_string(value)
 
@@ -880,7 +880,7 @@ class List(JSONField):
             return value
         else:
             raise TypeError(
-                'Value stored in a List must be None or a list, found %s' % type(value)
+                "Value stored in a List must be None or a list, found %s" % type(value)
             )
 
     enforce_type = from_json
@@ -924,14 +924,14 @@ class String(JSONField):
     """
 
     MUTABLE = False
-    VALID_CONTROLS = {'\n', '\r', '\t'}
+    VALID_CONTROLS = {"\n", "\r", "\t"}
 
     def _valid_char(self, character):
         """
         Strip invalid control characters from a unicode text object.
         """
         return (
-            unicodedata.category(character)[0] != 'C'
+            unicodedata.category(character)[0] != "C"
             or character in self.VALID_CONTROLS
         )
 
@@ -942,9 +942,9 @@ class String(JSONField):
         Leave all other characters.
         """
         if isinstance(value, six.binary_type):
-            value = value.decode('utf-8')
+            value = value.decode("utf-8")
         if isinstance(value, six.text_type):
-            new_value = ''.join(ch for ch in value if self._valid_char(ch))
+            new_value = "".join(ch for ch in value if self._valid_char(ch))
         else:
             return value
         # The new string will be equivalent to the original string if no control characters are present.
@@ -960,7 +960,7 @@ class String(JSONField):
             return value
         else:
             raise TypeError(
-                'Value stored in a String must be None or a string, found %s'
+                "Value stored in a String must be None or a string, found %s"
                 % type(value)
             )
 
@@ -971,7 +971,7 @@ class String(JSONField):
     def to_string(self, value):
         """String gets serialized and deserialized without quote marks."""
         if isinstance(value, six.binary_type):
-            value = value.decode('utf-8')
+            value = value.decode("utf-8")
         return self.to_json(value)
 
     @property
@@ -1016,7 +1016,7 @@ class DateTime(JSONField):
     or None.
     """
 
-    DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+    DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
     def from_json(self, value):
         """
@@ -1026,7 +1026,7 @@ class DateTime(JSONField):
             return None
 
         if isinstance(value, six.binary_type):
-            value = value.decode('utf-8')
+            value = value.decode("utf-8")
 
         if isinstance(value, six.text_type):
             # Parser interprets empty string as now by default
@@ -1157,20 +1157,20 @@ def scope_key(instance, xblock):
 
     """
     scope_key_dict = {}
-    scope_key_dict['name'] = instance.name
+    scope_key_dict["name"] = instance.name
     if instance.scope.user == UserScope.NONE or instance.scope.user == UserScope.ALL:
         pass
     elif instance.scope.user == UserScope.ONE:
-        scope_key_dict['user'] = six.text_type(xblock.scope_ids.user_id)
+        scope_key_dict["user"] = six.text_type(xblock.scope_ids.user_id)
     else:
         raise NotImplementedError()
 
     if instance.scope.block == BlockScope.TYPE:
-        scope_key_dict['block'] = six.text_type(xblock.scope_ids.block_type)
+        scope_key_dict["block"] = six.text_type(xblock.scope_ids.block_type)
     elif instance.scope.block == BlockScope.USAGE:
-        scope_key_dict['block'] = six.text_type(xblock.scope_ids.usage_id)
+        scope_key_dict["block"] = six.text_type(xblock.scope_ids.usage_id)
     elif instance.scope.block == BlockScope.DEFINITION:
-        scope_key_dict['block'] = six.text_type(xblock.scope_ids.def_id)
+        scope_key_dict["block"] = six.text_type(xblock.scope_ids.def_id)
     elif instance.scope.block == BlockScope.ALL:
         pass
     else:
@@ -1198,7 +1198,7 @@ def scope_key(instance, xblock):
         else:
             return "_{}_".format(ord(char))
 
-    for item in ['block', 'name', 'user']:
+    for item in ["block", "name", "user"]:
         if item in scope_key_dict:
             field = scope_key_dict[item]
             # Prevent injection of "..", hidden files, or similar.

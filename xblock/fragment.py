@@ -19,7 +19,7 @@ class Fragment(web_fragments.fragment.Fragment):
 
     def __init__(self, *args, **kwargs):
         warnings.warn(
-            'xblock.fragment is deprecated. Please use web_fragments.fragment instead',
+            "xblock.fragment is deprecated. Please use web_fragments.fragment instead",
             DeprecationWarning,
             stacklevel=2,
         )

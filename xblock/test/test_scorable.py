@@ -19,7 +19,7 @@ class StubScorableBlock(scorable.ScorableXBlockMixin):
     A very simple scorable block that needs no backing
     """
 
-    location = 'Here'
+    location = "Here"
 
     _scoring_error = False
     _allows_rescore = None
@@ -45,7 +45,7 @@ class StubScorableBlock(scorable.ScorableXBlockMixin):
 
     def calculate_score(self):
         if self._scoring_error:
-            raise RuntimeError('Whoops')  # Any error will do
+            raise RuntimeError("Whoops")  # Any error will do
         else:
             return scorable.Score(raw_earned=1.6, raw_possible=2.0)
 
@@ -65,8 +65,8 @@ class RescoreTestCase(TestCase):
         # only_if_higher set appropriately.
         block.runtime.publish.assert_called_with(
             block,
-            'grade',
-            {'value': 1.6, 'max_value': 2.0, 'only_if_higher': only_if_higher},
+            "grade",
+            {"value": 1.6, "max_value": 2.0, "only_if_higher": only_if_higher},
         )
 
     def test_not_yet_scored(self):

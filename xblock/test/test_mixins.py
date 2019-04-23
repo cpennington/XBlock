@@ -81,23 +81,23 @@ class TestScopedStorageMixin(AttrAssertionMixin, TestCase):
         # pylint: disable=E1101
         self.assertIsNot(self.ScopedStorageMixinTester.fields, self.ChildClass.fields)
 
-        self.assertHasAttr(self.ScopedStorageMixinTester, 'field_a')
-        self.assertHasAttr(self.ScopedStorageMixinTester, 'field_b')
+        self.assertHasAttr(self.ScopedStorageMixinTester, "field_a")
+        self.assertHasAttr(self.ScopedStorageMixinTester, "field_b")
 
         self.assertIs(
             self.ScopedStorageMixinTester.field_a,
-            self.ScopedStorageMixinTester.fields['field_a'],
+            self.ScopedStorageMixinTester.fields["field_a"],
         )
         self.assertIs(
             self.ScopedStorageMixinTester.field_b,
-            self.ScopedStorageMixinTester.fields['field_b'],
+            self.ScopedStorageMixinTester.fields["field_b"],
         )
 
-        self.assertHasAttr(self.ChildClass, 'field_a')
-        self.assertHasAttr(self.ChildClass, 'field_b')
+        self.assertHasAttr(self.ChildClass, "field_a")
+        self.assertHasAttr(self.ChildClass, "field_b")
 
-        self.assertIs(self.ChildClass.field_a, self.ChildClass.fields['field_a'])
-        self.assertIs(self.ChildClass.field_b, self.ChildClass.fields['field_b'])
+        self.assertIs(self.ChildClass.field_a, self.ChildClass.fields["field_a"])
+        self.assertIs(self.ChildClass.field_b, self.ChildClass.fields["field_b"])
 
     def test_with_mixins(self):
         # Testing model metaclass with mixins
@@ -107,22 +107,22 @@ class TestScopedStorageMixin(AttrAssertionMixin, TestCase):
         # silence this error for the duration of this test.
         # pylint: disable=E1101
 
-        self.assertHasAttr(self.MixinChildClass, 'field_a')
-        self.assertHasAttr(self.MixinChildClass, 'field_c')
+        self.assertHasAttr(self.MixinChildClass, "field_a")
+        self.assertHasAttr(self.MixinChildClass, "field_c")
         self.assertIs(
-            self.MixinChildClass.field_a, self.MixinChildClass.fields['field_a']
+            self.MixinChildClass.field_a, self.MixinChildClass.fields["field_a"]
         )
-        self.assertIs(self.FieldsMixin.field_c, self.MixinChildClass.fields['field_c'])
+        self.assertIs(self.FieldsMixin.field_c, self.MixinChildClass.fields["field_c"])
 
-        self.assertHasAttr(self.MixinGrandchildClass, 'field_a')
-        self.assertHasAttr(self.MixinGrandchildClass, 'field_c')
+        self.assertHasAttr(self.MixinGrandchildClass, "field_a")
+        self.assertHasAttr(self.MixinGrandchildClass, "field_c")
         self.assertIs(
             self.MixinGrandchildClass.field_a,
-            self.MixinGrandchildClass.fields['field_a'],
+            self.MixinGrandchildClass.fields["field_a"],
         )
         self.assertIs(
             self.MixinGrandchildClass.field_c,
-            self.MixinGrandchildClass.fields['field_c'],
+            self.MixinGrandchildClass.fields["field_c"],
         )
 
 
@@ -154,9 +154,9 @@ class TestHierarchyMixin(AttrAssertionMixin, TestCase):
         self.assertFalse(self.WithoutChildren.has_children)
         self.assertTrue(self.InheritedChildren.has_children)
 
-        self.assertHasAttr(self.HasChildren, 'children')
-        self.assertNotHasAttr(self.WithoutChildren, 'children')
-        self.assertHasAttr(self.InheritedChildren, 'children')
+        self.assertHasAttr(self.HasChildren, "children")
+        self.assertNotHasAttr(self.WithoutChildren, "children")
+        self.assertHasAttr(self.InheritedChildren, "children")
 
         self.assertIsInstance(self.HasChildren.children, List)
         self.assertEqual(Scope.children, self.HasChildren.children.scope)
@@ -175,7 +175,7 @@ class TestIndexInfoMixin(AttrAssertionMixin):
         pass
 
     def test_index_info(self):
-        self.assertHasAttr(self.IndexInfoMixinTester, 'index_dictionary')
+        self.assertHasAttr(self.IndexInfoMixinTester, "index_dictionary")
         with_index_info = self.IndexInfoMixinTester().index_dictionary()
         self.assertFalse(with_index_info)
         self.assertTrue(isinstance(with_index_info, dict))
@@ -270,7 +270,7 @@ class TestXmlSerializationMixin(TestCase):
     class TestXBlock(XBlock):
         """ XBlock for XML export test """
 
-        etree_node_tag = 'test_xblock'
+        etree_node_tag = "test_xblock"
 
         str_field = String()
         str_str_default = String(default="default")
@@ -284,7 +284,7 @@ class TestXmlSerializationMixin(TestCase):
     class TestXBlockAside(XBlockAside):
         """ XBlockAside for XML export test """
 
-        etree_node_tag = 'test_xblock_aside'
+        etree_node_tag = "test_xblock_aside"
 
         str_field = String()
         str_str_default = String(default="default")
@@ -292,7 +292,7 @@ class TestXmlSerializationMixin(TestCase):
     class TestXBlockWithDateTime(XBlock):
         """ XBlock for DateTime fields export """
 
-        etree_node_tag = 'test_xblock_with_datetime'
+        etree_node_tag = "test_xblock_with_datetime"
 
         datetime = DateTime(default=None)
 
@@ -319,10 +319,10 @@ class TestXmlSerializationMixin(TestCase):
     def _assert_node_attributes(self, node, expected_attributes, entry_point=None):
         """ Checks XML node attributes to match expected_attributes"""
         node_attributes = list(node.keys())
-        node_attributes.remove('xblock-family')
+        node_attributes.remove("xblock-family")
 
         self.assertEqual(
-            node.get('xblock-family'),
+            node.get("xblock-family"),
             entry_point if entry_point else self.TestXBlock.entry_point,
         )
         self.assertEqual(set(node_attributes), set(expected_attributes.keys()))
@@ -343,7 +343,7 @@ class TestXmlSerializationMixin(TestCase):
         )
         # All elements on the node are expected to have a "none"="true" attribute.
         for elem in node:
-            self.assertEqual(elem.get('none'), 'true')
+            self.assertEqual(elem.get("none"), "true")
 
     def test_no_fields_set_add_xml_to_node(self):
         """
@@ -363,16 +363,16 @@ class TestXmlSerializationMixin(TestCase):
         self._assert_node_attributes(
             node,
             {
-                'str_str_default_force_export': 'default',
-                'str_uid_default_force_export': UNIQUE_ID,
+                "str_str_default_force_export": "default",
+                "str_uid_default_force_export": UNIQUE_ID,
             },
         )
         self._assert_node_elements(
             node,
             {
                 # The tag is prefixed with {namespace}.
-                '{{{}}}{}'.format(
-                    XML_NAMESPACES["option"], 'str_none_default_force_export'
+                "{{{}}}{}".format(
+                    XML_NAMESPACES["option"], "str_none_default_force_export"
                 ): None
             },
         )
@@ -383,18 +383,18 @@ class TestXmlSerializationMixin(TestCase):
         """
         node = etree.Element(self.test_xblock_tag)
 
-        self.test_xblock.str_field = 'str_field_val'
-        self.test_xblock.str_str_default = 'str_str_default_val'
+        self.test_xblock.str_field = "str_field_val"
+        self.test_xblock.str_str_default = "str_str_default_val"
         self.test_xblock.str_str_default_force_export = (
-            'str_str_default_force_export_val'
+            "str_str_default_force_export_val"
         )
-        self.test_xblock.str_uid_default = 'str_uid_default_val'
+        self.test_xblock.str_uid_default = "str_uid_default_val"
         self.test_xblock.str_uid_default_force_export = (
-            'str_uid_default_force_export_val'
+            "str_uid_default_force_export_val"
         )
-        self.test_xblock.str_none_default = 'str_none_default_val'
+        self.test_xblock.str_none_default = "str_none_default_val"
         self.test_xblock.str_none_default_force_export = (
-            'str_none_default_force_export_val'
+            "str_none_default_force_export_val"
         )
 
         self.test_xblock.add_xml_to_node(node)
@@ -402,13 +402,13 @@ class TestXmlSerializationMixin(TestCase):
         self._assert_node_attributes(
             node,
             {
-                'str_field': 'str_field_val',
-                'str_str_default': 'str_str_default_val',
-                'str_str_default_force_export': 'str_str_default_force_export_val',
-                'str_uid_default': 'str_uid_default_val',
-                'str_uid_default_force_export': 'str_uid_default_force_export_val',
-                'str_none_default': 'str_none_default_val',
-                'str_none_default_force_export': 'str_none_default_force_export_val',
+                "str_field": "str_field_val",
+                "str_str_default": "str_str_default_val",
+                "str_str_default_force_export": "str_str_default_force_export_val",
+                "str_uid_default": "str_uid_default_val",
+                "str_uid_default_force_export": "str_uid_default_force_export_val",
+                "str_none_default": "str_none_default_val",
+                "str_none_default_force_export": "str_none_default_force_export_val",
             },
         )
         self._assert_node_elements(node, {})
@@ -435,15 +435,15 @@ class TestXmlSerializationMixin(TestCase):
             node,
             {
                 # The tags are prefixed with {namespace}.
-                '{{{}}}{}'.format(XML_NAMESPACES["option"], tag): None
+                "{{{}}}{}".format(XML_NAMESPACES["option"], tag): None
                 for tag in [
-                    'str_field',
-                    'str_str_default',
-                    'str_str_default_force_export',
-                    'str_uid_default',
-                    'str_uid_default_force_export',
-                    'str_none_default',
-                    'str_none_default_force_export',
+                    "str_field",
+                    "str_str_default",
+                    "str_str_default_force_export",
+                    "str_uid_default",
+                    "str_uid_default_force_export",
+                    "str_none_default",
+                    "str_none_default_force_export",
                 ]
             },
         )
@@ -456,11 +456,11 @@ class TestXmlSerializationMixin(TestCase):
 
         # Now set some fields to values.
         self.test_xblock.str_field = None
-        self.test_xblock.str_str_default = 'water is wet'
-        self.test_xblock.str_str_default_force_export = ''
-        self.test_xblock.str_uid_default = 'smart'
-        self.test_xblock.str_uid_default_force_export = '47'
-        self.test_xblock.str_none_default = ''
+        self.test_xblock.str_str_default = "water is wet"
+        self.test_xblock.str_str_default_force_export = ""
+        self.test_xblock.str_uid_default = "smart"
+        self.test_xblock.str_uid_default_force_export = "47"
+        self.test_xblock.str_none_default = ""
         self.test_xblock.str_none_default_force_export = None
 
         # Now unset those same fields.
@@ -478,16 +478,16 @@ class TestXmlSerializationMixin(TestCase):
         self._assert_node_attributes(
             node,
             {
-                'str_str_default_force_export': 'default',
-                'str_uid_default_force_export': UNIQUE_ID,
+                "str_str_default_force_export": "default",
+                "str_uid_default_force_export": UNIQUE_ID,
             },
         )
         self._assert_node_elements(
             node,
             {
                 # The tag is prefixed with {namespace}.
-                '{{{}}}{}'.format(
-                    XML_NAMESPACES["option"], 'str_none_default_force_export'
+                "{{{}}}{}".format(
+                    XML_NAMESPACES["option"], "str_none_default_force_export"
                 ): None
             },
         )
@@ -498,25 +498,25 @@ class TestXmlSerializationMixin(TestCase):
         """
         node = etree.Element(self.test_xblock_aside_tag)
 
-        self.test_xblock_aside.str_field = 'str_field_val_aside'
-        self.test_xblock_aside.str_str_default = 'str_str_default_val'
+        self.test_xblock_aside.str_field = "str_field_val_aside"
+        self.test_xblock_aside.str_str_default = "str_str_default_val"
         self.test_xblock_aside.add_xml_to_node(node)
 
         self._assert_node_attributes(
             node,
             {
-                'str_field': 'str_field_val_aside',
-                'str_str_default': 'str_str_default_val',
+                "str_field": "str_field_val_aside",
+                "str_str_default": "str_str_default_val",
             },
             self.TestXBlockAside.entry_point,
         )
         self._assert_node_elements(node, {})
 
     @ddt.data(
-        (None, {'datetime': ''}),
+        (None, {"datetime": ""}),
         (
             datetime(2014, 4, 1, 2, 3, 4, 567890).replace(tzinfo=pytz.utc),
-            {'datetime': '2014-04-01T02:03:04.567890'},
+            {"datetime": "2014-04-01T02:03:04.567890"},
         ),
     )
     @ddt.unpack

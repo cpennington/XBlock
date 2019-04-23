@@ -78,7 +78,7 @@ class Plugin(object):
         attribute `plugin_name` on the loaded object
         """
         class_ = entry_point.load()
-        setattr(class_, 'plugin_name', entry_point.name)
+        setattr(class_, "plugin_name", entry_point.name)
         return class_
 
     @classmethod
@@ -154,13 +154,13 @@ class Plugin(object):
             except Exception:  # pylint: disable=broad-except
                 if fail_silently:
                     log.warning(
-                        'Unable to load %s %r', cls.__name__, class_.name, exc_info=True
+                        "Unable to load %s %r", cls.__name__, class_.name, exc_info=True
                     )
                 else:
                     raise
 
     @classmethod
-    def register_temp_plugin(cls, class_, identifier=None, dist='xblock'):
+    def register_temp_plugin(cls, class_, identifier=None, dist="xblock"):
         """Decorate a function to run with a temporary plugin available.
 
         Use it like this in tests::

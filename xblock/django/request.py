@@ -32,7 +32,7 @@ class HeaderDict(MutableMapping, six.Iterator):
     keys into actually HTTP header names
     """
 
-    UNPREFIXED_HEADERS = ('CONTENT_TYPE', 'CONTENT_LENGTH')
+    UNPREFIXED_HEADERS = ("CONTENT_TYPE", "CONTENT_LENGTH")
 
     def __init__(self, meta):
         super(HeaderDict, self).__init__()
@@ -44,18 +44,18 @@ class HeaderDict(MutableMapping, six.Iterator):
 
         See https://docs.djangoproject.com/en/1.4/ref/request-response/#django.http.HttpRequest.META
         """
-        name = name.upper().replace('-', '_')
+        name = name.upper().replace("-", "_")
         if name not in self.UNPREFIXED_HEADERS:
-            name = 'HTTP_' + name
+            name = "HTTP_" + name
         return name
 
     def _un_meta_name(self, name):
         """
         Reverse of _meta_name
         """
-        if name.startswith('HTTP_'):
+        if name.startswith("HTTP_"):
             name = name[5:]
-        return name.replace('_', '-').title()
+        return name.replace("_", "-").title()
 
     def __getitem__(self, name):
         return self._meta[self._meta_name(name)]
@@ -68,7 +68,7 @@ class HeaderDict(MutableMapping, six.Iterator):
 
     def __iter__(self):
         for key in self._meta:
-            if key in self.UNPREFIXED_HEADERS or key.startswith('HTTP_'):
+            if key in self.UNPREFIXED_HEADERS or key.startswith("HTTP_"):
                 yield self._un_meta_name(key)
 
     def __len__(self):
@@ -128,7 +128,7 @@ class DjangoWebobRequest(webob.Request):
         """
         environ = dict(self._request.META)
 
-        environ['PATH_INFO'] = self._request.path_info
+        environ["PATH_INFO"] = self._request.path_info
 
         return environ
 
@@ -141,8 +141,8 @@ class DjangoWebobRequest(webob.Request):
 
     @property
     def POST(self):
-        if self.method not in ('POST', 'PUT', 'PATCH'):
-            return NoVars('Not a form request')
+        if self.method not in ("POST", "PUT", "PATCH"):
+            return NoVars("Not a form request")
 
         # Webob puts uploaded files into the POST dictionary, so here we
         # combine the Django POST data and uploaded FILES data into a single

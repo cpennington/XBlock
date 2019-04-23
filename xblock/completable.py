@@ -20,7 +20,7 @@ class XBlockCompletionMode(object):
 
         Defaults to XBlockCompletionMode.COMPLETABLE.
         """
-        return getattr(block_class, 'completion_mode', cls.COMPLETABLE)
+        return getattr(block_class, "completion_mode", cls.COMPLETABLE)
 
 
 class CompletableXBlockMixin(object):
@@ -66,4 +66,4 @@ class CompletableXBlockMixin(object):
                 )
             )
 
-        self.runtime.publish(self, 'completion', {'completion': completion_percent})
+        self.runtime.publish(self, "completion", {"completion": completion_percent})

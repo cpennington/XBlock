@@ -33,6 +33,6 @@ class XBlockMixin(xblock.core.XBlockMixin):
 # without causing a circular import
 xblock.fields.XBlockMixin = XBlockMixin
 
-VERSION_FILE = os.path.join(os.path.dirname(__file__), 'VERSION.txt')
+VERSION_FILE = os.path.join(os.path.dirname(__file__), "VERSION.txt")
 
-__version__ = codecs.open(VERSION_FILE, encoding='ascii').read().strip()
+__version__ = codecs.open(VERSION_FILE, encoding="ascii").read().strip()

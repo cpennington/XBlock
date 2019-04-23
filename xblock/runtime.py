@@ -51,7 +51,7 @@ class KeyValueStore(six.with_metaclass(ABCMeta, object)):
         """
 
         def __new__(
-            cls, scope, user_id, block_scope_id, field_name, block_family='xblock.v1'
+            cls, scope, user_id, block_scope_id, field_name, block_family="xblock.v1"
         ):
             return super(KeyValueStore.Key, cls).__new__(
                 cls, scope, user_id, block_scope_id, field_name, block_family
@@ -373,9 +373,9 @@ class IdGenerator(six.with_metaclass(ABCMeta, object)):
 class MemoryIdManager(IdReader, IdGenerator):
     """A simple dict-based implementation of IdReader and IdGenerator."""
 
-    ASIDE_USAGE_ID = namedtuple('MemoryAsideUsageId', 'usage_id aside_type')
+    ASIDE_USAGE_ID = namedtuple("MemoryAsideUsageId", "usage_id aside_type")
     ASIDE_DEFINITION_ID = namedtuple(
-        'MemoryAsideDefinitionId', 'definition_id aside_type'
+        "MemoryAsideDefinitionId", "definition_id aside_type"
     )
 
     def __init__(self):
@@ -455,7 +455,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
     # Abstract methods
     @abstractmethod
-    def handler_url(self, block, handler_name, suffix='', query='', thirdparty=False):
+    def handler_url(self, block, handler_name, suffix="", query="", thirdparty=False):
         """Get the actual URL to invoke a handler.
 
         `handler_name` is the name of your handler function. Any additional
@@ -742,7 +742,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
         block_type = node.tag
         # remove xblock-family from elements
-        node.attrib.pop('xblock-family', None)
+        node.attrib.pop("xblock-family", None)
         # TODO: a way for this node to be a usage to an existing definition?
         def_id = id_generator.create_definition(block_type)
         usage_id = id_generator.create_usage(def_id)
@@ -752,7 +752,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         aside_children = []
         for child in node.iterchildren():
             # get xblock-family from node
-            xblock_family = child.attrib.pop('xblock-family', None)
+            xblock_family = child.attrib.pop("xblock-family", None)
             if xblock_family:
                 xblock_family = self._family_id_to_superclass(xblock_family)
                 if issubclass(xblock_family, XBlockAside):
@@ -805,7 +805,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
                 aside_node = etree.Element("unknown_root", nsmap=XML_NAMESPACES)
                 aside.add_xml_to_node(aside_node)
                 block.append(aside_node)
-        tree.write(xmlfile, xml_declaration=True, pretty_print=True, encoding='utf-8')
+        tree.write(xmlfile, xml_declaration=True, pretty_print=True, encoding="utf-8")
 
     def add_block_as_child_node(self, block, node):
         """
@@ -889,7 +889,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         The default implementation creates a frag to wraps frag w/ a div identifying the xblock. If you have
         javascript, you'll need to override this impl
         """
-        if hasattr(self, 'wrap_child'):
+        if hasattr(self, "wrap_child"):
             log.warning(
                 "wrap_child is deprecated in favor of wrap_xblock and wrap_aside %s",
                 self.__class__,
@@ -898,7 +898,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
                 block, view, frag, context
             )  # pylint: disable=no-member
 
-        extra_data = {'name': block.name} if block.name else {}
+        extra_data = {"name": block.name} if block.name else {}
         return self._wrap_ele(block, view, frag, extra_data)
 
     def wrap_aside(
@@ -915,7 +915,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
             aside,
             view,
             frag,
-            {'block_id': block.scope_ids.usage_id, 'url_selector': 'asideBaseUrl'},
+            {"block_id": block.scope_ids.usage_id, "url_selector": "asideBaseUrl"},
         )
 
     def _wrap_ele(self, block, view, frag, extra_data=None):
@@ -925,31 +925,31 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         """
         wrapped = Fragment()
         data = {
-            'usage': block.scope_ids.usage_id,
-            'block-type': block.scope_ids.block_type,
+            "usage": block.scope_ids.usage_id,
+            "block-type": block.scope_ids.block_type,
         }
         data.update(extra_data)
 
         if frag.js_init_fn:
-            data['init'] = frag.js_init_fn
-            data['runtime-version'] = frag.js_init_version
+            data["init"] = frag.js_init_fn
+            data["runtime-version"] = frag.js_init_version
 
         json_init = ""
         # TODO/Note: We eventually want to remove: hasattr(frag, 'json_init_args')
         # However, I'd like to maintain backwards-compatibility with older XBlock
         # for at least a little while so as not to adversely effect developers.
         # pmitros/Jun 28, 2014.
-        if hasattr(frag, 'json_init_args') and frag.json_init_args is not None:
+        if hasattr(frag, "json_init_args") and frag.json_init_args is not None:
             json_init = (
                 '<script type="json/xblock-args" class="xblock_json_init_args">'
-                '{data}</script>'
+                "{data}</script>"
             ).format(data=json.dumps(frag.json_init_args))
 
-        block_css_entrypoint = block.entry_point.replace('.', '-')
-        css_classes = [block_css_entrypoint, '{}-{}'.format(block_css_entrypoint, view)]
+        block_css_entrypoint = block.entry_point.replace(".", "-")
+        css_classes = [block_css_entrypoint, "{}-{}".format(block_css_entrypoint, view)]
 
         html = "<div class='{}'{properties}>{body}{js}</div>".format(
-            markupsafe.escape(' '.join(css_classes)),
+            markupsafe.escape(" ".join(css_classes)),
             properties="".join(" data-%s='%s'" % item for item in list(data.items())),
             body=frag.body_html(),
             js=json_init,
@@ -1068,7 +1068,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
 
     # Handlers
 
-    def handle(self, block, handler_name, request, suffix=''):
+    def handle(self, block, handler_name, request, suffix=""):
         """
         Handles any calls to the specified `handler_name`.
 
@@ -1080,13 +1080,13 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         :param suffix: The remainder of the url, after the handler url prefix, if available
         """
         handler = getattr(block, handler_name, None)
-        if handler and getattr(handler, '_is_xblock_handler', False):
+        if handler and getattr(handler, "_is_xblock_handler", False):
             # Cache results of the handler call for later saving
             results = handler(request, suffix)
         else:
             fallback_handler = getattr(block, "fallback_handler", None)
             if fallback_handler and getattr(
-                fallback_handler, '_is_xblock_handler', False
+                fallback_handler, "_is_xblock_handler", False
             ):
                 # Cache results of the handler call for later saving
                 results = fallback_handler(handler_name, request, suffix)
@@ -1221,7 +1221,7 @@ class Runtime(six.with_metaclass(ABCMeta, object)):
         for family in [XBlock, XBlockAside]:
             if family_id == family.entry_point:
                 return family
-        raise ValueError('No such family: {}'.format(family_id))
+        raise ValueError("No such family: {}".format(family_id))
 
 
 class ObjectAggregator(object):
@@ -1233,7 +1233,7 @@ class ObjectAggregator(object):
     """
 
     def __init__(self, *objects):
-        self.__dict__['_objects'] = objects
+        self.__dict__["_objects"] = objects
 
     def _object_with_attr(self, name):
         """
@@ -1284,7 +1284,7 @@ class Mixologist(object):
         :type cls: `class`
         """
 
-        if hasattr(cls, 'unmixed_class'):
+        if hasattr(cls, "unmixed_class"):
             base_class = cls.unmixed_class
             old_mixins = cls.__bases__[1:]  # Skip the original unmixed class
             mixins = old_mixins + tuple(
@@ -1306,9 +1306,9 @@ class Mixologist(object):
                     mixin_key,
                     type(
                         base_class.__name__
-                        + str('WithMixins'),  # type() requires native str
+                        + str("WithMixins"),  # type() requires native str
                         (base_class,) + mixins,
-                        {'unmixed_class': base_class},
+                        {"unmixed_class": base_class},
                     ),
                 )
         else:

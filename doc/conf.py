@@ -19,9 +19,9 @@ import sys
 import edx_theme
 import mock
 
-MOCK_MODULES = ['webob', 'lxml']
+MOCK_MODULES = ["webob", "lxml"]
 
-VERSION_FILE = os.path.join(os.path.dirname(__file__), '..', 'xblock', 'VERSION.txt')
+VERSION_FILE = os.path.join(os.path.dirname(__file__), "..", "xblock", "VERSION.txt")
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock(class_that_is_extended=object)
@@ -30,7 +30,7 @@ for mod_name in MOCK_MODULES:
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- General configuration -----------------------------------------------------
 
@@ -40,32 +40,32 @@ sys.path.insert(0, os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
-    'edx_theme',
-    'sphinx.ext.autodoc',
-    'sphinx.ext.coverage',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.intersphinx',
-    'sphinx.ext.napoleon',
-    'sphinx.ext.todo',
+    "edx_theme",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.coverage",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
 ]
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
 author = edx_theme.AUTHOR
-project = u'XBlock API Guide'
-copyright = '{year}, edX Inc.'.format(year=datetime.datetime.now().year)
+project = u"XBlock API Guide"
+copyright = "{year}, edX Inc.".format(year=datetime.datetime.now().year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = codecs.open(VERSION_FILE, encoding='ascii').read().strip()
+version = codecs.open(VERSION_FILE, encoding="ascii").read().strip()
 # The full version, including alpha/beta/rc tags.
 # release = '0.3'
 
@@ -95,7 +95,7 @@ version = codecs.open(VERSION_FILE, encoding='ascii').read().strip()
 # show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # A list of ignored prefixes for module index sorting.
 # modindex_common_prefix = []
@@ -106,13 +106,13 @@ autoclass_content = "both"
 
 # Warn about unresolvable references, but not all of them.
 nitpicky = True
-nitpick_ignore = [('py:obj', 'str'), ('py:obj', 'string')]
+nitpick_ignore = [("py:obj", "str"), ("py:obj", "string")]
 
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'edx_theme'
+html_theme = "edx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -137,7 +137,7 @@ html_theme_path = [edx_theme.get_html_theme_path()]
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 html_favicon = os.path.join(
-    html_theme_path[0], 'edx_theme', 'static', 'css', 'favicon.ico'
+    html_theme_path[0], "edx_theme", "static", "css", "favicon.ico"
 )
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -218,6 +218,6 @@ html_favicon = os.path.join(
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 # texinfo_show_urls = 'footnote'
 
-exclude_patterns = ['api/*', 'links.rst']
+exclude_patterns = ["api/*", "links.rst"]
 
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}

@@ -20,7 +20,7 @@ class TestFragment(TestCase):
         """
         Test the delegated Fragment class.
         """
-        TEST_HTML = u'<p>Hello, world!</p>'  # pylint: disable=invalid-name
+        TEST_HTML = "<p>Hello, world!</p>"  # pylint: disable=invalid-name
         fragment = Fragment()
         fragment.add_content(TEST_HTML)
         self.assertEqual(fragment.body_html(), TEST_HTML)

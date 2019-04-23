@@ -150,25 +150,25 @@ class UniversalProperties(object):
 
     def test_delete_without_save_writes(self):
         self.delete()
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
         assert self.is_default()
 
     def test_delete_with_save_writes(self):
         self.delete()
         self.block.save()
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
         assert self.is_default()
 
     def test_set_after_get_always_force_saves(self):
-        with patch.object(self.field_data, 'set_many') as patched_set_many:
+        with patch.object(self.field_data, "set_many") as patched_set_many:
             self.set(self.get())
 
-            self.block.force_save_fields(['field'])
+            self.block.force_save_fields(["field"])
 
-            patched_set_many.assert_called_with(self.block, {'field': self.get()})
+            patched_set_many.assert_called_with(self.block, {"field": self.get()})
 
     def test_set_after_get_doesnt_save(self):
-        with patch.object(self.field_data, 'set_many') as patched_set_many:
+        with patch.object(self.field_data, "set_many") as patched_set_many:
 
             self.set(self.get())
             self.block.save()
@@ -202,7 +202,7 @@ class MutationProperties(object):
         self.block.save()
         self.mutate(self.get())
         self.block.save()
-        final_value = self.field_data.get(self.block, 'field')
+        final_value = self.field_data.get(self.block, "field")
         assert reference_value == final_value
 
     def test_mutation_with_save_makes_non_default(self):
@@ -218,14 +218,14 @@ class MutationProperties(object):
         pointer = self.get()
         self.mutate(pointer)
         self.block.save()
-        assert pointer == self.field_data.get(self.block, 'field')
+        assert pointer == self.field_data.get(self.block, "field")
 
         # now check what happens when we mutate a field
         # that we haven't retrieved through __get__
         # (which would have marked it as dirty)
         self.mutate(pointer)
         self.block.save()
-        assert pointer == self.field_data.get(self.block, 'field')
+        assert pointer == self.field_data.get(self.block, "field")
 
     def test_set_save_mutate_save(self):
         pointer = self.new_value
@@ -233,7 +233,7 @@ class MutationProperties(object):
         self.block.save()
         self.mutate(pointer)
         self.block.save()
-        assert pointer == self.field_data.get(self.block, 'field')
+        assert pointer == self.field_data.get(self.block, "field")
 
 
 class InitialValueProperties(object):
@@ -249,25 +249,25 @@ class InitialValueProperties(object):
 
     def get_field_data(self):
         """Return a new :class:`~xblock.field_data.FieldData` for testing"""
-        return DictFieldData({'field': copy.deepcopy(self.initial_value)})
+        return DictFieldData({"field": copy.deepcopy(self.initial_value)})
 
     def test_get_gets_initial_value(self):
-        assert self.field_data.get(self.block, 'field') == self.get()
+        assert self.field_data.get(self.block, "field") == self.get()
 
     def test_get_with_save_doesnt_write(self):
-        initial_value = self.field_data.get(self.block, 'field')
+        initial_value = self.field_data.get(self.block, "field")
         self.get()
         self.block.save()
-        final_value = self.field_data.get(self.block, 'field')
+        final_value = self.field_data.get(self.block, "field")
 
         assert initial_value == final_value
 
     def test_set_with_save_writes(self):
-        initial_value = self.field_data.get(self.block, 'field')
+        initial_value = self.field_data.get(self.block, "field")
         assert self.new_value is not initial_value
         self.set(self.new_value)
         self.block.save()
-        assert self.new_value == self.field_data.get(self.block, 'field')
+        assert self.new_value == self.field_data.get(self.block, "field")
 
 
 class DefaultValueProperties(object):
@@ -281,28 +281,28 @@ class DefaultValueProperties(object):
     """
 
     def test_get_with_save_doesnt_write(self):
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
         self.get()
         self.block.save()
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
     def test_set_with_save_writes(self):
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
         self.set(self.new_value)
         self.block.save()
-        assert self.new_value == self.field_data.get(self.block, 'field')
+        assert self.new_value == self.field_data.get(self.block, "field")
 
     def test_delete_without_save_succeeds(self):
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
         self.delete()
 
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
     def test_delete_with_save_succeeds(self):
         self.delete()
         self.block.save()
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
 
 class DefaultValueMutationProperties(object):
@@ -316,15 +316,15 @@ class DefaultValueMutationProperties(object):
     """
 
     def test_mutation_without_save_doesnt_write(self):
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
         mutable = self.get()
         self.mutate(mutable)
 
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
     def test_mutation_with_save_writes(self):
-        assert not self.field_data.has(self.block, 'field')
+        assert not self.field_data.has(self.block, "field")
 
         mutable = self.get()
         reference_copy = copy.deepcopy(mutable)
@@ -336,7 +336,7 @@ class DefaultValueMutationProperties(object):
         self.mutate(mutable)
         self.block.save()
 
-        final_value = self.field_data.get(self.block, 'field')
+        final_value = self.field_data.get(self.block, "field")
         assert reference_copy == final_value
 
 
@@ -351,7 +351,7 @@ class InitialValueMutationProperties(object):
     """
 
     def test_mutation_without_save_doesnt_write(self):
-        initial_value = self.field_data.get(self.block, 'field')
+        initial_value = self.field_data.get(self.block, "field")
         reference_copy = copy.deepcopy(initial_value)
 
         mutable = self.get()
@@ -360,12 +360,12 @@ class InitialValueMutationProperties(object):
         # Verify that the test isn't vacuously true
         assert reference_copy != mutable
 
-        final_value = self.field_data.get(self.block, 'field')
+        final_value = self.field_data.get(self.block, "field")
         assert reference_copy == final_value
         assert initial_value == final_value
 
     def test_mutation_with_save_writes(self):
-        initial_value = self.field_data.get(self.block, 'field')
+        initial_value = self.field_data.get(self.block, "field")
         reference_copy = copy.deepcopy(initial_value)
         self.mutate(reference_copy)
 
@@ -376,7 +376,7 @@ class InitialValueMutationProperties(object):
         self.mutate(mutable)
         self.block.save()
 
-        final_value = self.field_data.get(self.block, 'field')
+        final_value = self.field_data.get(self.block, "field")
         assert reference_copy == final_value
 
 
@@ -403,7 +403,7 @@ class UniversalTestCases(UniversalProperties):
             field = self.field_class(default=copy.deepcopy(self.field_default))
 
         self.field_data = self.get_field_data()
-        self.runtime = TestRuntime(services={'field-data': self.field_data})
+        self.runtime = TestRuntime(services={"field-data": self.field_data})
         self.block = TestBlock(self.runtime, scope_ids=Mock(spec=ScopeIds))
 
     # pylint: enable=attribute-defined-outside-init
@@ -449,11 +449,11 @@ class MutableTestCases(UniversalTestCases, MutationProperties):
 
     field_class = List
     field_default = []
-    new_value = ['a', 'b']
+    new_value = ["a", "b"]
 
     def mutate(self, value):
         """Modify the supplied value"""
-        value.append('foo')
+        value.append("foo")
 
 
 class UniqueIdTestCases(ImmutableTestCases):
@@ -461,7 +461,7 @@ class UniqueIdTestCases(ImmutableTestCases):
 
     field_class = String
     field_default = UNIQUE_ID
-    new_value = 'user-assigned ID'
+    new_value = "user-assigned ID"
 
 
 # pylint: enable=no-member
@@ -516,7 +516,7 @@ class TestImmutableWithInitialValueAndUniqueIdDefault(
     UniqueIdTestCases, InitialValueProperties
 ):
     __test__ = False
-    initial_value = 'initial unique ID'
+    initial_value = "initial unique ID"
 
 
 # ~~~~~~~~~~~~~ Classes for testing noops before other tests ~~~~~~~~~~~~~~~~~~~~
@@ -595,7 +595,7 @@ for operation_backend in (BlockFirstOperations, FieldFirstOperations):
             vars()[test_name] = type(
                 str(test_name),  # First argument must be native string type
                 test_classes,
-                {'__test__': True},
+                {"__test__": True},
             )
 
 # If we don't delete the loop variables, then they leak into the global namespace

@@ -53,9 +53,9 @@ class ToyRuntimeKeyValueStore(KeyValueStore):
         """
         key_list = []
         if key.scope == Scope.children:
-            key_list.append('children')
+            key_list.append("children")
         elif key.scope == Scope.parent:
-            key_list.append('parent')
+            key_list.append("parent")
         else:
             key_list.append(key.scope.block.attr_name)
 
@@ -107,7 +107,7 @@ class ToyRuntime(Runtime):
 
     def __init__(self, user_id=None):
         super(ToyRuntime, self).__init__(
-            ID_MANAGER, services={'field-data': KvsFieldData(TOYRUNTIME_KVS)}
+            ID_MANAGER, services={"field-data": KvsFieldData(TOYRUNTIME_KVS)}
         )
         self.id_generator = ID_MANAGER
         self.user_id = user_id
@@ -118,7 +118,7 @@ class ToyRuntime(Runtime):
         """Mock for rendering templates"""
         return template_name
 
-    def handler_url(self, block, handler_name, suffix='', query='', thirdparty=False):
+    def handler_url(self, block, handler_name, suffix="", query="", thirdparty=False):
         # Be sure this really is a handler.
         func = getattr(block, handler_name, None)
         if not func:
@@ -126,7 +126,7 @@ class ToyRuntime(Runtime):
         if not getattr(func, "_is_xblock_handler", False):
             raise ValueError("{!r} is not a handler name".format(handler_name))
 
-        url = ''
+        url = ""
 
         has_query = False
         if not thirdparty:
@@ -141,7 +141,7 @@ class ToyRuntime(Runtime):
         return "toyruntime/" + resource
 
     def local_resource_url(self, block, uri):
-        return ''
+        return ""
 
     def publish(self, block, event_type, event_data):
         log.info(

@@ -67,7 +67,7 @@ class Nameable(object):
     """
 
     if six.PY2:
-        __slots__ = ('__name__',)
+        __slots__ = ("__name__",)
     __name__ = None
 
     @staticmethod

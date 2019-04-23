@@ -64,7 +64,7 @@ class HandlersMixin(object):
 
         @cls.handler
         @functools.wraps(func)
-        def wrapper(self, request, suffix=''):
+        def wrapper(self, request, suffix=""):
             """The wrapper function `json_handler` returns."""
             if request.method != "POST":
                 return JsonHandlerError(405, "Method must be POST").get_response(
@@ -83,8 +83,8 @@ class HandlersMixin(object):
             else:
                 return Response(
                     json.dumps(response),
-                    content_type='application/json',
-                    charset='utf8',
+                    content_type="application/json",
+                    charset="utf8",
                 )
 
         return wrapper
@@ -99,7 +99,7 @@ class HandlersMixin(object):
         func._is_xblock_handler = True  # pylint: disable=protected-access
         return func
 
-    def handle(self, handler_name, request, suffix=''):
+    def handle(self, handler_name, request, suffix=""):
         """Handle `request` with this block's runtime."""
         return self.runtime.handle(self, handler_name, request, suffix)
 
@@ -182,7 +182,7 @@ class RuntimeServicesMixin(object):
         return cls._combined_services.get(service_name)  # pylint: disable=no-member
 
 
-@RuntimeServicesMixin.needs('field-data')
+@RuntimeServicesMixin.needs("field-data")
 class ScopedStorageMixin(
     six.with_metaclass(NamedAttributesMetaclass, RuntimeServicesMixin)
 ):
@@ -209,7 +209,7 @@ class ScopedStorageMixin(
         # First, descend the MRO from the top down, updating the 'fields' dictionary
         # so that the dictionary always has the most specific version of fields in it
         for base in reversed(bases):
-            fields.update(getattr(base, 'fields', {}))
+            fields.update(getattr(base, "fields", {}))
 
         # For this class, loop through all attributes not named 'fields',
         # find those of type Field, and save them to the 'fields' dict
@@ -261,7 +261,7 @@ class ScopedStorageMixin(
         if self._deprecated_per_instance_field_data:
             return self._deprecated_per_instance_field_data
         else:
-            return self.runtime.service(self, 'field-data')
+            return self.runtime.service(self, "field-data")
 
     @_field_data.setter
     def _field_data(self, field_data):
@@ -311,7 +311,7 @@ class ScopedStorageMixin(
                 fields.remove(field)
                 # if the field was dirty, delete from dirty fields
                 self._reset_dirty_field(field)
-            msg = 'Error saving fields {}'.format(save_error.saved_field_names)
+            msg = "Error saving fields {}".format(save_error.saved_field_names)
             raise XBlockSaveError(saved_fields, fields, msg)
 
         # Remove all dirty fields, since the save was successful
@@ -355,7 +355,7 @@ class ScopedStorageMixin(
                 attrs.append(" %s=???" % (field.name,))
             else:
                 if isinstance(value, six.binary_type):
-                    value = value.decode('utf-8', errors='escape')
+                    value = value.decode("utf-8", errors="escape")
                 if isinstance(value, six.text_type):
                     value = value.strip()
                     if len(value) > 40:
@@ -364,7 +364,7 @@ class ScopedStorageMixin(
         return "<%s @%04X%s>" % (
             self.__class__.__name__,
             id(self) % 0xFFFF,
-            ','.join(attrs),
+            ",".join(attrs),
         )
 
 
@@ -376,14 +376,14 @@ class ChildrenModelMetaclass(ScopedStorageMixin.__class__):
     """
 
     def __new__(mcs, name, bases, attrs):
-        if attrs.get('has_children', False) or any(
-            getattr(base, 'has_children', False) for base in bases
+        if attrs.get("has_children", False) or any(
+            getattr(base, "has_children", False) for base in bases
         ):
-            attrs['children'] = ReferenceList(
-                help='The ids of the children of this XBlock', scope=Scope.children
+            attrs["children"] = ReferenceList(
+                help="The ids of the children of this XBlock", scope=Scope.children
             )
         else:
-            attrs['has_children'] = False
+            attrs["has_children"] = False
 
         return super(ChildrenModelMetaclass, mcs).__new__(mcs, name, bases, attrs)
 
@@ -394,7 +394,7 @@ class HierarchyMixin(six.with_metaclass(ChildrenModelMetaclass, ScopedStorageMix
     """
 
     parent = Reference(
-        help='The id of the parent of this XBlock', default=None, scope=Scope.parent
+        help="The id of the parent of this XBlock", default=None, scope=Scope.parent
     )
 
     def __init__(self, **kwargs):
@@ -403,7 +403,7 @@ class HierarchyMixin(six.with_metaclass(ChildrenModelMetaclass, ScopedStorageMix
         self._parent_block_id = None
         self._child_cache = {}
 
-        for_parent = kwargs.pop('for_parent', None)
+        for_parent = kwargs.pop("for_parent", None)
 
         if for_parent is not None:
             self._parent_block = for_parent
@@ -524,11 +524,11 @@ class XmlSerializationMixin(ScopedStorageMixin):
         # pylint: disable=E1101
         # Set node.tag based on our class name.
         node.tag = self.xml_element_name()
-        node.set('xblock-family', self.entry_point)
+        node.set("xblock-family", self.entry_point)
 
         # Set node attributes based on our fields.
         for field_name, field in self.fields.items():
-            if field_name in ('children', 'parent', 'content'):
+            if field_name in ("children", "parent", "content"):
                 continue
             if field.is_set_on(self) or field.force_export:
                 self._add_field(node, field_name, field)
@@ -545,7 +545,7 @@ class XmlSerializationMixin(ScopedStorageMixin):
     def xml_text_content(self):
         """What is the text content for this block's XML node?"""
         # pylint: disable=E1101
-        if 'content' in self.fields and self.content:
+        if "content" in self.fields and self.content:
             return self.content
         else:
             return None

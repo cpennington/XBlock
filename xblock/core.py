@@ -38,7 +38,7 @@ from xblock.validation import Validation
 XML_NAMESPACES = xblock.mixins.XML_NAMESPACES
 
 # __all__ controls what classes end up in the docs.
-__all__ = ['XBlock']
+__all__ = ["XBlock"]
 UNSET = object()
 
 
@@ -59,8 +59,8 @@ class SharedBlockBase(Plugin):
     Behaviors and attrs which all XBlock like things should share
     """
 
-    resources_dir = ''
-    public_dir = 'public'
+    resources_dir = ""
+    public_dir = "public"
 
     @classmethod
     def get_resources_dir(cls):
@@ -98,7 +98,7 @@ class SharedBlockBase(Plugin):
         """
 
         if isinstance(uri, six.binary_type):
-            uri = uri.decode('utf-8')
+            uri = uri.decode("utf-8")
 
         # If no resources_dir is set, then this XBlock cannot serve local resources.
         if cls.resources_dir is None:
@@ -107,7 +107,7 @@ class SharedBlockBase(Plugin):
             )
 
         # Make sure the path starts with whatever public_dir is set to.
-        if not uri.startswith(cls.public_dir + '/'):
+        if not uri.startswith(cls.public_dir + "/"):
             raise DisallowedFileError(
                 "Only files from %r/ are allowed: %r" % (cls.public_dir, uri)
             )
@@ -142,7 +142,7 @@ class XBlock(
 
     """
 
-    entry_point = 'xblock.v1'
+    entry_point = "xblock.v1"
 
     name = String(help="Short name for the block", scope=Scope.settings)
     tags = List(help="Tags for this block", scope=Scope.settings)
@@ -155,7 +155,7 @@ class XBlock(
         class_tags = set()
 
         for base in cls.mro()[1:]:  # pylint: disable=no-member
-            class_tags.update(getattr(base, '_class_tags', set()))
+            class_tags.update(getattr(base, "_class_tags", set()))
 
         return class_tags
 
@@ -212,7 +212,7 @@ class XBlock(
                 scopes.
         """
         if scope_ids is UNSET:
-            raise TypeError('scope_ids are required')
+            raise TypeError("scope_ids are required")
 
         # Provide backwards compatibility for external access through _field_data
         super(XBlock, self).__init__(
@@ -277,7 +277,7 @@ class XBlockAside(
         """
         # pylint: disable=protected-access
         def _decorator(func):  # pylint: disable=missing-docstring
-            if not hasattr(func, '_aside_for'):
+            if not hasattr(func, "_aside_for"):
                 func._aside_for = []
 
             func._aside_for.append(view_name)  # pylint: disable=protected-access
@@ -303,9 +303,9 @@ class XBlockAside(
         # to handle subclasses and overrides.
         combined_asides = defaultdict(None)
         for _view_name, view_func in inspect.getmembers(
-            cls, lambda attr: hasattr(attr, '_aside_for')
+            cls, lambda attr: hasattr(attr, "_aside_for")
         ):
-            aside_for = getattr(view_func, '_aside_for', [])
+            aside_for = getattr(view_func, "_aside_for", [])
             for view in aside_for:
                 combined_asides[view] = view_func.__name__
         return combined_asides

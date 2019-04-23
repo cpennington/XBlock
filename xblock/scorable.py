@@ -11,7 +11,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-Score = namedtuple('Score', ['raw_earned', 'raw_possible'])
+Score = namedtuple("Score", ["raw_earned", "raw_possible"])
 
 
 class ScorableXBlockMixin(object):
@@ -43,16 +43,16 @@ class ScorableXBlockMixin(object):
         unconstrained.
         """
 
-        _ = self.runtime.service(self, 'i18n').ugettext
+        _ = self.runtime.service(self, "i18n").ugettext
 
         if not self.allows_rescore():
             raise TypeError(
-                _('Problem does not support rescoring: {}').format(self.location)
+                _("Problem does not support rescoring: {}").format(self.location)
             )
 
         if not self.has_submitted_answer():
             raise ValueError(
-                _('Cannot rescore unanswered problem: {}').format(self.location)
+                _("Cannot rescore unanswered problem: {}").format(self.location)
             )
 
         new_score = self.calculate_score()
@@ -114,8 +114,8 @@ class ScorableXBlockMixin(object):
         Publish a grade to the runtime.
         """
         grade_dict = {
-            'value': score.raw_earned,
-            'max_value': score.raw_possible,
-            'only_if_higher': only_if_higher,
+            "value": score.raw_earned,
+            "max_value": score.raw_possible,
+            "only_if_higher": only_if_higher,
         }
-        self.runtime.publish(self, 'grade', grade_dict)
+        self.runtime.publish(self, "grade", grade_dict)

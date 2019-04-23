@@ -26,7 +26,7 @@ from xblock.django.request import django_to_webob_request, webob_to_django_respo
 # pylint: enable=wrong-import-position
 
 
-@pytest.mark.skipif(not HAS_DJANGO, reason='Django not available')
+@pytest.mark.skipif(not HAS_DJANGO, reason="Django not available")
 class TestDjangoWebobRequest(TestCase):
     """
     Tests of the django_to_webob_request function
@@ -38,18 +38,18 @@ class TestDjangoWebobRequest(TestCase):
     def test_post_already_read(self):
         # Check that POST already having been read from doesn't
         # prevent access to the POST of the webob object
-        dj_req = self.req_factory.post('dummy_url', data={'foo': 'bar'})
+        dj_req = self.req_factory.post("dummy_url", data={"foo": "bar"})
 
         # Read from POST before constructing the webob request
         self.assertEqual(
-            dj_req.POST.getlist('foo'), ['bar']
+            dj_req.POST.getlist("foo"), ["bar"]
         )  # pylint: disable=no-member
 
         webob_req = django_to_webob_request(dj_req)
-        self.assertEqual(webob_req.POST.getall('foo'), ['bar'])
+        self.assertEqual(webob_req.POST.getall("foo"), ["bar"])
 
 
-@pytest.mark.skipif(not HAS_DJANGO, reason='Django not available')
+@pytest.mark.skipif(not HAS_DJANGO, reason="Django not available")
 class TestDjangoWebobResponse(TestCase):
     """
     Tests of the webob_to_django_response function
@@ -72,25 +72,25 @@ class TestDjangoWebobResponse(TestCase):
         self.assertEqual(self._as_django(app_iter=(c for c in "foo")).content, b"foo")
         self.assertEqual(self._as_django(body=b"foo", charset="utf-8").content, b"foo")
 
-        encoded_snowman = "\N{SNOWMAN}".encode('utf-8')
+        encoded_snowman = "\N{SNOWMAN}".encode("utf-8")
         self.assertEqual(
             self._as_django(body=encoded_snowman, charset="utf-8").content,
             encoded_snowman,
         )
 
     def test_headers(self):
-        self.assertIn('X-Foo', self._as_django(headerlist=[('X-Foo', 'bar')]))
-        self.assertEqual(self._as_django(headerlist=[('X-Foo', 'bar')])['X-Foo'], 'bar')
+        self.assertIn("X-Foo", self._as_django(headerlist=[("X-Foo", "bar")]))
+        self.assertEqual(self._as_django(headerlist=[("X-Foo", "bar")])["X-Foo"], "bar")
 
     def test_content_types(self):
         # JSON content type (no charset should be returned)
         self.assertEqual(
-            self._as_django(content_type='application/json')['Content-Type'],
-            'application/json',
+            self._as_django(content_type="application/json")["Content-Type"],
+            "application/json",
         )
 
         # HTML content type (UTF-8 charset should be returned)
         self.assertEqual(
-            self._as_django(content_type='text/html')['Content-Type'],
-            'text/html; charset=UTF-8',
+            self._as_django(content_type="text/html")["Content-Type"],
+            "text/html; charset=UTF-8",
         )

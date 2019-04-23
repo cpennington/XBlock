@@ -44,49 +44,49 @@ class TestSplitFieldData(object):
         self.split = SplitFieldData(
             {Scope.content: self.content, Scope.settings: self.settings}
         )
-        self.runtime = TestRuntime(services={'field-data': self.split})
+        self.runtime = TestRuntime(services={"field-data": self.split})
         self.block = TestingBlock(runtime=self.runtime, scope_ids=Mock())
 
     # pylint: enable=attribute-defined-outside-init
 
     def test_get(self):
-        self.split.get(self.block, 'content')
-        self.content.get.assert_called_once_with(self.block, 'content')
+        self.split.get(self.block, "content")
+        self.content.get.assert_called_once_with(self.block, "content")
         assert not self.settings.get.called
 
     def test_set(self):
-        self.split.set(self.block, 'content', 'foo')
-        self.content.set.assert_called_once_with(self.block, 'content', 'foo')
+        self.split.set(self.block, "content", "foo")
+        self.content.set.assert_called_once_with(self.block, "content", "foo")
         assert not self.settings.set.called
 
     def test_delete(self):
-        self.split.delete(self.block, 'content')
-        self.content.delete.assert_called_once_with(self.block, 'content')
+        self.split.delete(self.block, "content")
+        self.content.delete.assert_called_once_with(self.block, "content")
         assert not self.settings.delete.called
 
     def test_has(self):
-        self.split.has(self.block, 'content')
-        self.content.has.assert_called_once_with(self.block, 'content')
+        self.split.has(self.block, "content")
+        self.content.has.assert_called_once_with(self.block, "content")
         assert not self.settings.has.called
 
     def test_set_many(self):
         self.split.set_many(
-            self.block, {'content': 'new content', 'settings': 'new settings'}
+            self.block, {"content": "new content", "settings": "new settings"}
         )
         self.content.set_many.assert_called_once_with(
-            self.block, {'content': 'new content'}
+            self.block, {"content": "new content"}
         )
         self.settings.set_many.assert_called_once_with(
-            self.block, {'settings': 'new settings'}
+            self.block, {"settings": "new settings"}
         )
 
     def test_invalid_scope(self):
         with pytest.raises(InvalidScopeError):
-            self.split.get(self.block, 'user_state')
+            self.split.get(self.block, "user_state")
 
     def test_default(self):
-        self.split.default(self.block, 'content')
-        self.content.default.assert_called_once_with(self.block, 'content')
+        self.split.default(self.block, "content")
+        self.content.default.assert_called_once_with(self.block, "content")
         assert not self.settings.default.called
 
 
@@ -102,33 +102,33 @@ class TestReadOnlyFieldData(object):
         """
         self.source = Mock()
         self.read_only = ReadOnlyFieldData(self.source)
-        self.runtime = TestRuntime(services={'field-data': self.read_only})
+        self.runtime = TestRuntime(services={"field-data": self.read_only})
         self.block = TestingBlock(runtime=self.runtime, scope_ids=Mock())
 
     # pylint: enable=attribute-defined-outside-init
 
     def test_get(self):
-        assert self.source.get.return_value == self.read_only.get(self.block, 'content')
-        self.source.get.assert_called_once_with(self.block, 'content')
+        assert self.source.get.return_value == self.read_only.get(self.block, "content")
+        self.source.get.assert_called_once_with(self.block, "content")
 
     def test_set(self):
         with pytest.raises(InvalidScopeError):
-            self.read_only.set(self.block, 'content', 'foo')
+            self.read_only.set(self.block, "content", "foo")
 
     def test_delete(self):
         with pytest.raises(InvalidScopeError):
-            self.read_only.delete(self.block, 'content')
+            self.read_only.delete(self.block, "content")
 
     def test_set_many(self):
         with pytest.raises(InvalidScopeError):
-            self.read_only.set_many(self.block, {'content': 'foo', 'settings': 'bar'})
+            self.read_only.set_many(self.block, {"content": "foo", "settings": "bar"})
 
     def test_default(self):
         assert self.source.default.return_value == self.read_only.default(
-            self.block, 'content'
+            self.block, "content"
         )
-        self.source.default.assert_called_once_with(self.block, 'content')
+        self.source.default.assert_called_once_with(self.block, "content")
 
     def test_has(self):
-        assert self.source.has.return_value == self.read_only.has(self.block, 'content')
-        self.source.has.assert_called_once_with(self.block, 'content')
+        assert self.source.has.return_value == self.read_only.has(self.block, "content")
+        self.source.has.assert_called_once_with(self.block, "content")

@@ -24,7 +24,7 @@ class XBlockCompletionModeTest(TestCase):
     Tests for XBlockCompletionMode
     """
 
-    blocklike = namedtuple('block_like', ['completion_mode'])
+    blocklike = namedtuple("block_like", ["completion_mode"])
 
     @ddt.data(
         XBlockCompletionMode.COMPLETABLE,
@@ -41,8 +41,8 @@ class XBlockCompletionModeTest(TestCase):
         )
 
     def test_unknown_mode(self):
-        block = self.blocklike('somenewmode')
-        self.assertEqual(XBlockCompletionMode.get_mode(block), 'somenewmode')
+        block = self.blocklike("somenewmode")
+        self.assertEqual(XBlockCompletionMode.get_mode(block), "somenewmode")
 
 
 class CompletableXBlockMixinTest(TestCase):
@@ -84,7 +84,7 @@ class CompletableXBlockMixinTest(TestCase):
         """
         block = self._make_block()
         self.assertTrue(block.has_custom_completion)
-        self.assertTrue(getattr(block, 'has_custom_completion', False))
+        self.assertTrue(getattr(block, "has_custom_completion", False))
 
     def test_completion_mode_property(self):
         """
@@ -95,7 +95,7 @@ class CompletableXBlockMixinTest(TestCase):
             XBlockCompletionMode.get_mode(block), XBlockCompletionMode.COMPLETABLE
         )
         self.assertEqual(
-            getattr(block, 'completion_mode'), XBlockCompletionMode.COMPLETABLE
+            getattr(block, "completion_mode"), XBlockCompletionMode.COMPLETABLE
         )
 
     @given(strategies.floats())
@@ -143,8 +143,8 @@ class CompletableXBlockMixinTest(TestCase):
 
     @given(strategies.floats().filter(lambda x: math.isnan(x) or x < 0.0 or x > 1.0))
     @example(None)
-    @example(float('+inf'))
-    @example(float('-inf'))
+    @example(float("+inf"))
+    @example(float("-inf"))
     def test_emit_completion_raises_assertion_error_if_invalid(
         self, invalid_completion_percent
     ):

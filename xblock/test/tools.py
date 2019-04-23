@@ -26,7 +26,7 @@ def blocks_are_equivalent(block1, block2):
 
     # The data fields have to have the same values.
     for field_name in block1.fields:
-        if field_name in ('parent', 'children'):
+        if field_name in ("parent", "children"):
             continue
         if getattr(block1, field_name) != getattr(block2, field_name):
             return False
@@ -129,8 +129,8 @@ class TestRuntime(Runtime):
         memory_id_manager = MemoryIdManager()
         # Provide an IdReader if one isn't already passed to the runtime.
         if not args:
-            kwargs.setdefault('id_reader', memory_id_manager)
-        kwargs.setdefault('id_generator', memory_id_manager)
+            kwargs.setdefault("id_reader", memory_id_manager)
+        kwargs.setdefault("id_generator", memory_id_manager)
         super(TestRuntime, self).__init__(*args, **kwargs)
 
     def handler_url(self, *args, **kwargs):

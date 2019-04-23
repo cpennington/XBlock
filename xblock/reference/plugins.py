@@ -14,13 +14,13 @@ try:
 except ImportError:
 
     class ImproperlyConfigured(Exception):
-        '''
+        """
         If Django is installed, and djpyfs is installed, but we're not in a
         Django app, we'll get this exception. We'd like to catch
         it. But we don't want the try/except to fail even if we're
         either in a proper Django app, or don't have Django installed
         at all.
-        '''
+        """
 
         pass
 
@@ -93,9 +93,9 @@ class Service(object):
 
     def __init__(self, **kwargs):
         # TODO: We need plumbing to set these
-        self._runtime = kwargs.get('runtime', None)
-        self._xblock = kwargs.get('xblock', None)
-        self._user = kwargs.get('user', None)
+        self._runtime = kwargs.get("runtime", None)
+        self._xblock = kwargs.get("xblock", None)
+        self._user = kwargs.get("user", None)
 
     def xblock(self):
         """
@@ -149,7 +149,7 @@ class Filesystem(Field):
 
         value = self._get_cached_value(xblock)
         if value is NO_CACHE_VALUE:
-            value = xblock.runtime.service(xblock, 'fs').load(self, xblock)
+            value = xblock.runtime.service(xblock, "fs").load(self, xblock)
             self._set_cached_value(xblock, value)
 
         return value

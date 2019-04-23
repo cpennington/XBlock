@@ -77,24 +77,24 @@ class TestNamedDescriptorsMetaclass(TestCase):
     "Tests of the NamedDescriptorsMetaclass."
 
     def test_named_descriptor(self):
-        self.assertEqual('test_descriptor', NamingTester.test_descriptor.__name__)
+        self.assertEqual("test_descriptor", NamingTester.test_descriptor.__name__)
 
     def test_named_getset_descriptor(self):
         self.assertEqual(
-            'test_getset_descriptor', NamingTester.test_getset_descriptor.__name__
+            "test_getset_descriptor", NamingTester.test_getset_descriptor.__name__
         )
 
     def test_inherited_naming(self):
         self.assertEqual(
-            'test_descriptor', InheritedNamingTester.test_descriptor.__name__
+            "test_descriptor", InheritedNamingTester.test_descriptor.__name__
         )
-        self.assertEqual('inherited', InheritedNamingTester.inherited.__name__)
+        self.assertEqual("inherited", InheritedNamingTester.inherited.__name__)
 
     def test_unnamed_attribute(self):
-        self.assertFalse(hasattr(NamingTester.test_nonnameable, '__name__'))
+        self.assertFalse(hasattr(NamingTester.test_nonnameable, "__name__"))
 
     def test_method(self):
-        self.assertEqual('meth', NamingTester.meth.__name__)
+        self.assertEqual("meth", NamingTester.meth.__name__)
 
     def test_prop(self):
-        self.assertFalse(hasattr(NamingTester.prop, '__name__'))
+        self.assertFalse(hasattr(NamingTester.prop, "__name__"))
