@@ -3,6 +3,7 @@
 -r django.txt                       # Package dependencies, including optional Django support
 
 astroid
+black
 caniusepython3
 coverage
 ddt
